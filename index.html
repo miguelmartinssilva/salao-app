@@ -10,8 +10,8 @@
 <title>Studio Glamour</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--gold:#c9a84c;--gold-light:#e8c97a;--dark:#1a0a14;--dark2:#2d1020;--rose:#fdf8f4;--rose2:#fdf0e8;--text:#9b7060;--green:#7dc9a0;--red:#c97a7a;--pink:#e0a0c0;--bg:#fdf8f4;--card:#fff;--card-border:#fdf0e8;--input-bg:#fdf8f4;--shadow:rgba(180,100,120,.08);--text-primary:#1a0a14;--text-secondary:#2d1020}
-.dark{--dark:#e8dcd4;--dark2:#d4c8c0;--rose:#1a0a14;--rose2:#2d1020;--text:#f0e8d8;--bg:#0e0a0c;--card:#1a0a14;--card-border:#2d1020;--input-bg:#2d1020;--shadow:rgba(0,0,0,.3);--text-primary:#f0e8d8;--text-secondary:#e8dcd4}
+:root{--gold:#c9a84c;--gold-light:#e8c97a;--dark:#1a0a14;--dark2:#2d1020;--rose:#fdf8f4;--rose2:#fdf0e8;--text:#9b7060;--green:#7dc9a0;--red:#c97a7a;--pink:#e0a0c0;--bg:#fdf8f4;--card:#fff;--card-border:#fdf0e8;--input-bg:#fdf8f4;--shadow:rgba(180,100,120,.08);--text-primary:#1a0a14;--text-secondary:#2d1020;--sec-bg:#f5ede8;--sec-border:rgba(201,168,76,.12);--ter-bg:#f0e8e0}
+.dark{--dark:#e8dcd4;--dark2:#d4c8c0;--rose:#1a0a14;--rose2:#2d1020;--text:#f0e8d8;--bg:#0e0a0c;--card:#1a0a14;--card-border:#2d1020;--input-bg:#2d1020;--shadow:rgba(0,0,0,.3);--text-primary:#f0e8d8;--text-secondary:#e8dcd4;--sec-bg:#231620;--sec-border:rgba(201,168,76,.12);--ter-bg:#1a1118}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;transition:background .3s,color .3s}
 input,select,button,textarea{font-family:inherit;font-size:inherit}
 .header{background:linear-gradient(160deg,var(--dark),var(--dark2));padding:12px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
@@ -89,14 +89,14 @@ input,select,button,textarea{font-family:inherit;font-size:inherit}
 .shortcut-primary .s-arrow{font-size:18px;opacity:.6}
 .shortcut-primary::after{content:'';position:absolute;top:0;left:-50%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transform:skewX(-25deg);transition:left .4s}
 .shortcut-primary:active::after{left:150%}
-.shortcut-secondary{display:flex;flex-direction:column;align-items:flex-start;gap:6px;background:#231620;border:1px solid rgba(201,168,76,.12);border-radius:12px;padding:14px;cursor:pointer;text-align:left;transition:transform .15s;position:relative;overflow:hidden}
+.shortcut-secondary{display:flex;flex-direction:column;align-items:flex-start;gap:6px;background:var(--sec-bg);border:1px solid var(--sec-border);border-radius:12px;padding:14px;cursor:pointer;text-align:left;transition:transform .15s,background .3s,border-color .3s;position:relative;overflow:hidden}
 .shortcut-secondary:active{transform:scale(.97)}
 .shortcut-secondary::after{content:'';position:absolute;top:0;left:-50%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);transform:skewX(-25deg);transition:left .4s}
 .shortcut-secondary:active::after{left:150%}
 .shortcut-secondary .s-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .shortcut-secondary .s-label{font-size:13px;font-weight:700;color:var(--text-primary)}
 .shortcut-secondary .s-hint{font-size:9px;color:var(--text);line-height:1.3}
-.shortcut-tertiary{display:flex;align-items:center;gap:12px;background:#1a1118;border:none;border-radius:12px;padding:12px;cursor:pointer;text-align:left;transition:transform .15s;position:relative;overflow:hidden}
+.shortcut-tertiary{display:flex;align-items:center;gap:12px;background:var(--ter-bg);border:none;border-radius:12px;padding:12px;cursor:pointer;text-align:left;transition:transform .15s,background .3s;position:relative;overflow:hidden}
 .shortcut-tertiary:active{transform:scale(.97)}
 .shortcut-tertiary::after{content:'';position:absolute;top:0;left:-50%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03),transparent);transform:skewX(-25deg);transition:left .4s}
 .shortcut-tertiary:active::after{left:150%}
@@ -366,8 +366,8 @@ function renderDashboard(entradas,saidas,lucro,todayAppts,s){
         <div style="height:4px;background:var(--card-border);border-radius:4px;overflow:hidden"><div style="height:100%;width:${Math.min(margem,100)}%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:4px"></div></div>
       </div>
     </div>
-    <div class="card" style="background:${dark()?'#0e0a0c':'var(--card)'};border:${dark()?'1px solid rgba(201,168,76,0.08)':'none'}">
-      <div class="card-title" style="color:${dark()?'#f0e8d8':'var(--text-primary)'}">Atalhos</div>
+    <div class="card">
+      <div class="card-title">Atalhos</div>
       <div class="shortcuts-grid">
         <button class="shortcut-primary" onclick="startBooking()">
           <div class="s-icon">${svg(I.plus,20)}</div>
