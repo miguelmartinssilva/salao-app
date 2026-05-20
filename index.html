@@ -11,7 +11,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--gold:#c9a84c;--gold-light:#e8c97a;--dark:#1a0a14;--dark2:#2d1020;--rose:#fdf8f4;--rose2:#fdf0e8;--text:#9b7060;--green:#7dc9a0;--red:#c97a7a;--pink:#e0a0c0;--bg:#fdf8f4;--card:#fff;--card-border:#fdf0e8;--input-bg:#fdf8f4;--shadow:rgba(180,100,120,.08);--text-primary:#1a0a14;--text-secondary:#2d1020}
-.dark{--dark:#e8dcd4;--dark2:#d4c8c0;--rose:#1a0a14;--rose2:#2d1020;--text:#a09088;--bg:#0d060e;--card:#1a0a14;--card-border:#2d1020;--input-bg:#2d1020;--shadow:rgba(0,0,0,.3);--text-primary:#e8dcd4;--text-secondary:#d4c8c0}
+.dark{--dark:#e8dcd4;--dark2:#d4c8c0;--rose:#1a0a14;--rose2:#2d1020;--text:#f0e8d8;--bg:#0e0a0c;--card:#1a0a14;--card-border:#2d1020;--input-bg:#2d1020;--shadow:rgba(0,0,0,.3);--text-primary:#f0e8d8;--text-secondary:#e8dcd4}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;transition:background .3s,color .3s}
 input,select,button,textarea{font-family:inherit;font-size:inherit}
 .header{background:linear-gradient(160deg,var(--dark),var(--dark2));padding:12px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
@@ -152,6 +152,36 @@ input,select,button,textarea{font-family:inherit;font-size:inherit}
 .toggle.on{background:var(--gold)}
 .toggle .knob{width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .toggle.on .knob{transform:translateX(18px)}
+.client-list{display:flex;flex-direction:column;gap:8px}
+.client-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--card-border);background:var(--card);cursor:pointer;transition:all .15s;position:relative}
+.client-row:active{transform:scale(.98)}
+.client-row .ca{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--text-primary);flex-shrink:0}
+.client-row .ci{flex:1;min-width:0}
+.client-row .ci .cn{font-size:13px;font-weight:700;color:var(--text-primary)}
+.client-row .ci .cs{font-size:10px;color:var(--text);margin-top:1px}
+.client-row .ct{text-align:right;flex-shrink:0}
+.client-row .ct .cv{font-size:13px;font-weight:700;color:var(--gold)}
+.client-row .ct .cd{font-size:9px;color:var(--text)}
+.client-badge{display:inline-block;padding:2px 7px;border-radius:8px;font-size:8px;font-weight:700;margin-left:6px;vertical-align:middle}
+.client-badge.gold{background:var(--gold);color:var(--dark)}
+.client-badge.green{background:var(--green);color:#fff}
+.client-badge.pink{background:var(--pink);color:#fff}
+.client-badge.blue{background:#a0c0e0;color:#1a0a14}
+.client-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.client-header .cha{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--text-primary);flex-shrink:0}
+.client-header .chd{flex:1}
+.client-header .chd .chn{font-size:17px;font-weight:700;color:var(--text-primary)}
+.client-header .chd .chm{font-size:11px;color:var(--text);margin-top:2px}
+.client-actions{display:flex;gap:6px;margin-bottom:12px}
+.client-actions button{flex:1;padding:8px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
+.client-action-primary{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--dark)}
+.client-action-secondary{background:var(--card);border:1px solid var(--card-border)!important;color:var(--text)}
+.client-action-danger{background:rgba(201,122,122,.15);color:var(--red)}
+.sort-bar{display:flex;gap:4px;margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sort-btn{padding:5px 10px;border-radius:14px;border:1px solid var(--card-border);font-size:9px;cursor:pointer;font-weight:600;background:var(--card);color:var(--text);white-space:nowrap;transition:all .2s}
+.sort-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
+.client-count{font-size:11px;color:var(--text);margin-bottom:8px;padding:0 2px}
+.service-tag{display:inline-block;padding:2px 8px;border-radius:10px;background:rgba(201,168,76,.12);color:var(--gold);font-size:9px;font-weight:600;margin:2px}
 </style>
 </head>
 <body>
@@ -182,20 +212,22 @@ let state = {
   services:load('services',defServices.map((n,i)=>({id:i+1,name:n,price:i===0?65:i===1?180:i===2?90:i===3?80:i===4?280:i===5?220:i===6?45:60}))),
   pros:load('pros',[{id:1,name:'Camila'},{id:2,name:'Juliana'},{id:3,name:'Larissa'}]),
   calMonth:new Date().getMonth(),calYear:new Date().getFullYear(),
-  filterFin:'todos',clientSearch:'',clientDetail:null,
+  clients:load('clients',[]),
+  filterFin:'todos',clientSearch:'',clientFilter:'todos',clientSort:'nome',clientDetail:null,
   toast:null,loading:false,
-  showModal:false,showTransModal:false,showServicesModal:false,showProModal:false,
+  showModal:false,showTransModal:false,showServicesModal:false,showProModal:false,showClientModal:false,
   stepModal:false,step:1,totalSteps:4,
-  editingAppt:null,editingService:null,editingPro:null,
+  editingAppt:null,editingService:null,editingPro:null,editingClient:null,
   darkMode:load('darkMode',false),
   formAppt:{client:'',service:'',prof:'',time:'09:00',date:today(),value:''},
   formTrans:{desc:'',type:'entrada',value:'',date:today(),cat:'Servico'},
   formService:{name:'',price:''},
   formPro:{name:''},
+  formClient:{name:'',phone:'',whatsapp:'',birth:'',notes:'',active:true},
   notifEnabled:load('notifEnabled',false)
 }
 
-function save(){localStorage.setItem('appts',JSON.stringify(state.appointments));localStorage.setItem('trans',JSON.stringify(state.transactions));localStorage.setItem('services',JSON.stringify(state.services));localStorage.setItem('pros',JSON.stringify(state.pros));localStorage.setItem('darkMode',JSON.stringify(state.darkMode));localStorage.setItem('notifEnabled',JSON.stringify(state.notifEnabled))}
+function save(){localStorage.setItem('appts',JSON.stringify(state.appointments));localStorage.setItem('trans',JSON.stringify(state.transactions));localStorage.setItem('services',JSON.stringify(state.services));localStorage.setItem('pros',JSON.stringify(state.pros));localStorage.setItem('clients',JSON.stringify(state.clients));localStorage.setItem('darkMode',JSON.stringify(state.darkMode));localStorage.setItem('notifEnabled',JSON.stringify(state.notifEnabled))}
 
 function svg(path,size=16){return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`}
 const I={
@@ -291,6 +323,7 @@ ${s.showModal?renderApptModal(s,stepsHtml):''}
 ${s.showTransModal?renderTransModal(s):''}
 ${s.showServicesModal?renderServicesModal(s):''}
 ${s.showProModal?renderProModal(s):''}
+${s.showClientModal?renderClientModal(s):''}
 ${s.stepModal?s.loading?`<div class="modal-overlay"><div class="modal-content"><div class="text-center" style="padding:30px"><div class="spinner"></div><div style="margin-top:10px;color:var(--text);font-size:13px">Salvando...</div></div></div></div>`:'':''}
 `}
 
@@ -440,43 +473,157 @@ function renderFinance(entradas,saidas,lucro,filteredTrans,filterFin){
   `
 }
 
+function syncClients(){
+  const names=[...new Set(state.appointments.map(a=>a.client))]
+  names.forEach(n=>{if(!state.clients.find(c=>c.name===n))state.clients.push({id:Date.now()+Math.random()*1000|0,name:n,phone:'',whatsapp:'',birth:'',notes:'',active:true,createdAt:today()})})
+  save()
+}
+
+function getClientInfo(name){
+  const cl=state.clients.find(c=>c.name===name)
+  const apps=state.appointments.filter(a=>a.client===name).sort((a,b)=>b.date.localeCompare(a.date))
+  const total=apps.reduce((x,a)=>x+a.value,0)
+  const favSvc={};apps.forEach(a=>{favSvc[a.service]=(favSvc[a.service]||0)+1})
+  const fav=Object.keys(favSvc).sort((a,b)=>favSvc[b]-favSvc[a])[0]||''
+  const lastAppt=apps[0]||null
+  const nextAppt=state.appointments.filter(a=>a.client===name&&a.date>=today()&&a.status!=='cancelado'&&a.status!=='concluido').sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time))[0]||null
+  const freq=apps.length>=3?'frequente':apps.length>=1?'novo':'inativo'
+  const isBirthday=cl&&cl.birth?(new Date(cl.birth).getMonth()===new Date().getMonth()&&new Date(cl.birth).getDate()===new Date().getDate()):false
+  return {cl,apps,total,fav,lastAppt,nextAppt,freq,isBirthday}
+}
+
 function renderClients(search,clients,appts,colors,s){
+  syncClients()
+  const now=new Date();const curMonth=now.getMonth()
+  let filtered=[...state.clients].filter(c=>{
+    if(s.clientFilter==='ativos'&&!c.active)return false
+    if(s.clientFilter==='inativos'&&c.active)return false
+    if(s.clientFilter==='aniversariantes'){
+      if(!c.birth)return false
+      const b=new Date(c.birth)
+      if(b.getMonth()!==curMonth)return false
+    }
+    if(search){
+      const q=search.toLowerCase()
+      if(!c.name.toLowerCase().includes(q)&&!c.phone.includes(q)&&!(c.whatsapp||'').includes(q))return false
+    }
+    return true
+  })
+
+  const getSortVal=(c)=>{
+    const info=getClientInfo(c.name)
+    if(s.clientSort==='recente')return info.lastAppt?info.lastAppt.date:'0000-00-00'
+    if(s.clientSort==='frequente')return -info.apps.length
+    if(s.clientSort==='gasto')return -info.total
+    return c.name.toLowerCase()
+  }
+  if(s.clientSort==='nome')filtered.sort((a,b)=>a.name.localeCompare(b.name))
+  else filtered.sort((a,b)=>getSortVal(a)<getSortVal(b)?-1:1)
+
+  const nClient=filtered.length
+  const filters=['todos','ativos','inativos','aniversariantes']
+  const sorts=['nome','recente','frequente','gasto']
+
   return`
-    <div class="card">
-      <div class="search-box">
-        <span class="search-icon">${svg(I.search,12)}</span>
-        <input placeholder="Buscar cliente..." value="${search}" oninput="searchClient(this.value)">
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <div style="flex:1;position:relative">
+        <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text);pointer-events:none">${svg(I.search,12)}</span>
+        <input placeholder="Buscar nome ou telefone..." value="${search}" oninput="searchClient(this.value)" style="width:100%;padding:9px 10px 9px 32px;border-radius:8px;border:1px solid var(--card-border);font-size:12px;outline:none;color:var(--text-primary);background:var(--input-bg);box-sizing:border-box">
+      </div>
+      <button onclick="openClientModal()" style="background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:8px;color:var(--dark);padding:8px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">${svg(I.plus,12)}</button>
+    </div>
+
+    <div class="card" style="padding:10px 14px">
+      <div class="client-count">${nClient} cliente${nClient!==1?'s':''} ${s.clientFilter==='aniversariantes'?'🥳 aniversariantes do mês':''}</div>
+      <div class="filter-bar">
+        ${filters.map(f=>`<button class="filter-btn${s.clientFilter===f?' active':''}" onclick="setClientFilter('${f}')">${f==='todos'?'Todos':f==='ativos'?'Ativos':f==='inativos'?'Inativos':'🥳 Aniversariantes'}</button>`).join('')}
+      </div>
+      <div class="sort-bar">
+        ${sorts.map(s=>`<button class="sort-btn${s.clientSort===s?' active':''}" onclick="setClientSort('${s}')">${s==='nome'?'Nome A-Z':s==='recente'?'Mais recente':s==='frequente'?'+ frequente':'+ gasto'}</button>`).join('')}
       </div>
     </div>
-    ${clients.length===0?`<div class="card"><div class="empty-state"><div class="icon">&#128101;</div><div class="msg">Nenhum cliente encontrado</div></div></div>`:
-      `<div class="client-grid">${clients.map((c,i)=>{
-        const apps=state.appointments.filter(a=>a.client===c),total=apps.reduce((x,a)=>x+a.value,0)
-        return `<div class="client-card" onclick="viewClient('${c}')">
-          <div class="client-avatar" style="background:${colors[i%colors.length]}44;border:1px solid ${colors[i%colors.length]}66">${c.charAt(0)}</div>
-          <div class="client-name">${c}</div>
-          <div class="client-stats"><span>${apps.length} visita${apps.length!==1?'s':''}</span><span>R$ ${total}</span></div>
+
+    ${nClient===0?`<div class="card"><div class="empty-state"><div class="icon">&#128101;</div><div class="msg">Nenhum cliente encontrado</div></div></div>`:
+      `<div class="client-list">${filtered.map((c,i)=>{
+        const info=getClientInfo(c.name)
+        const badgeCls=info.freq==='frequente'?'gold':info.isBirthday?'pink':'green'
+        const badgeTxt=info.isBirthday?'🥳 Aniver':info.freq==='frequente'?'Frequente':'Novo'
+        const badgeShow=info.isBirthday||info.freq==='frequente'||info.apps.length<=1
+        return `<div class="client-row" onclick="viewClient('${c.name}')">
+          <div class="ca" style="background:${colors[i%colors.length]}44;border:1px solid ${colors[i%colors.length]}66">${c.name.charAt(0)}</div>
+          <div class="ci">
+            <div class="cn">${c.name}${badgeShow?`<span class="client-badge ${badgeCls}">${badgeTxt}</span>`:''}</div>
+            <div class="cs">${c.phone||(c.whatsapp?'📱'+c.whatsapp:'')}${info.lastAppt?' • Ultimo: '+info.lastAppt.service+' '+info.lastAppt.date.slice(5):' • Sem historico'}</div>
+          </div>
+          <div class="ct">
+            <div class="cv">${info.apps.length}x</div>
+            <div class="cd">R$ ${info.total}</div>
+          </div>
         </div>`
       }).join('')}</div>`}
+
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button onclick="exportClientCSV()" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);font-size:11px;cursor:pointer;color:var(--text);font-weight:600">${svg(I.arrowDown,12)} Exportar CSV</button>
+      <button onclick="exportClientWhatsApp()" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);font-size:11px;cursor:pointer;color:var(--text);font-weight:600">📱 Lista WhatsApp</button>
+    </div>
   `
 }
 
 function renderClientDetail(s,colors){
   const client=s.clientDetail
   if(!client)return''
-  const apps=s.appointments.filter(a=>a.client===client).sort((a,b)=>b.date.localeCompare(a.date))
-  const total=apps.reduce((x,a)=>x+a.value,0)
-  const idx=[...new Set(s.appointments.map(a=>a.client))].indexOf(client)
+  const info=getClientInfo(client)
+  const cl=info.cl
+  const allNames=[...new Set(s.appointments.map(a=>a.client))]
+  const idx=allNames.indexOf(client)
   const c=colors[Math.max(0,idx)%colors.length]
+
+  const favSvcs={};info.apps.forEach(a=>{favSvcs[a.service]=(favSvcs[a.service]||0)+1})
+  const favSorted=Object.keys(favSvcs).sort((a,b)=>favSvcs[b]-favSvcs[a])
+
   return`
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-      <button onclick="goBack()" style="background:none;border:none;cursor:pointer;color:var(--text);padding:4px">${svg(I.back,18)}</button>
-      <div class="client-avatar" style="width:40px;height:40px;font-size:18px;background:${c}44;border:1px solid ${c}66;border-radius:50%;display:flex;align-items:center;justify-content:center">${client.charAt(0)}</div>
-      <div><div style="font-size:16px;font-weight:700;color:var(--text-primary)">${client}</div><div style="font-size:11px;color:var(--text)">${apps.length} visita${apps.length!==1?'s':''} • Total: R$ ${total}</div></div>
+    <div class="client-header">
+      <button onclick="goBack()" style="background:none;border:none;cursor:pointer;color:var(--text);padding:4px;align-self:flex-start;margin-top:-4px">${svg(I.back,18)}</button>
+      <div class="cha" style="background:${c}44;border:1px solid ${c}66">${client.charAt(0)}</div>
+      <div class="chd">
+        <div class="chn">${client}${info.isBirthday?' 🥳':''}<span class="client-badge ${info.freq==='frequente'?'gold':'green'}" style="margin-left:6px;font-size:7px">${info.isBirthday?'Aniversariante':info.freq}</span></div>
+        <div class="chm">${cl&&cl.phone?'📞 '+cl.phone:''}${cl&&cl.whatsapp?' • 📱 '+cl.whatsapp:''}${cl&&cl.birth?' • 🎂 '+cl.birth.split('-').reverse().join('/'):''}</div>
+      </div>
     </div>
+
+    <div class="client-actions">
+      <button class="client-action-primary" onclick="startBookingFromClient('${client}')">${svg(I.plus,12)} Agendar</button>
+      ${cl&&cl.whatsapp?`<button class="client-action-secondary" onclick="window.open('https://wa.me/55${cl.whatsapp.replace(/[^0-9]/g,'')}','_blank')">📱 WhatsApp</button>`:cl&&cl.phone?`<button class="client-action-secondary" onclick="window.open('https://wa.me/55${cl.phone.replace(/[^0-9]/g,'')}','_blank')">📱 WhatsApp</button>`:''}
+      <button class="client-action-secondary" onclick="editClientByName('${client}')">${svg(I.edit,12)}</button>
+      <button class="client-action-danger" onclick="deleteClient('${client}')">${svg(I.trash,12)}</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+      <div class="fin-card" style="text-align:center"><div class="fin-label">Visitas</div><div class="fin-value fin-gold">${info.apps.length}x</div></div>
+      <div class="fin-card" style="text-align:center"><div class="fin-label">Total gasto</div><div class="fin-value fin-gold" style="font-size:12px">R$ ${info.total}</div></div>
+      <div class="fin-card" style="text-align:center"><div class="fin-label">Ticket med</div><div class="fin-value fin-gold" style="font-size:12px">R$ ${info.apps.length?Math.round(info.total/info.apps.length):0}</div></div>
+    </div>
+
+    ${info.nextAppt?`
+    <div class="card" style="border-left:3px solid var(--gold)">
+      <div class="card-title" style="margin-bottom:6px">Proximo agendamento</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><span style="font-size:13px;font-weight:700;color:var(--text-primary)">${info.nextAppt.service}</span><span style="font-size:11px;color:var(--text);margin-left:6px">${info.nextAppt.date.split('-').reverse().join('/')} as ${info.nextAppt.time}</span></div>
+        <span class="appt-status" style="background:${STATUS[info.nextAppt.status]}33;color:${STATUS[info.nextAppt.status]}">${info.nextAppt.status}</span>
+      </div>
+    </div>`:''}
+
     <div class="card">
-      <div class="card-title">Historico de Servicos</div>
-      ${apps.length===0?`<div class="empty-state"><div class="msg">Nenhum servico</div></div>`:
-        apps.map(a=>`
+      <div class="card-title">Servicos favoritos</div>
+      <div>${favSorted.length?favSorted.map(sv=>`<span class="service-tag">${sv} (${favSvcs[sv]}x)</span>`).join(''):'<span style="font-size:11px;color:var(--text)">Nenhum servico ainda</span>'}</div>
+    </div>
+
+    ${cl&&cl.notes?`<div class="card"><div class="card-title">Observacoes</div><div style="font-size:12px;color:var(--text-primary);line-height:1.4">${cl.notes}</div></div>`:''}
+
+    <div class="card">
+      <div class="card-title">Historico (${info.apps.length} servico${info.apps.length!==1?'s':''})</div>
+      ${info.apps.length===0?`<div class="empty-state"><div class="icon">&#9986;</div><div class="msg">Nenhum servico ainda</div></div>`:
+        info.apps.map(a=>`
           <div class="appt-item">
             <div class="appt-time"><div class="t">${a.date.slice(8)}</div><div style="font-size:8px;color:var(--text)">${MONTHS[parseInt(a.date.slice(5,7))-1].slice(0,3)}</div></div>
             <div class="appt-info"><div class="name">${a.service}${a.prof?' • '+a.prof:''}</div><div class="service">${a.time} • R$ ${a.value}</div></div>
@@ -683,6 +830,27 @@ function renderProModal(s){
     </div>`
 }
 
+function renderClientModal(s){
+  const isEdit=s.editingClient
+  return`
+    <div class="modal-overlay" onclick="closeClientModal(event)">
+      <div class="modal-content">
+        <div class="modal-header"><h3>${isEdit?'Editar':'Novo'} Cliente</h3><button class="modal-close" onclick="closeClientModal()">${svg(I.x,16)}</button></div>
+        <div class="form-group"><label>Nome completo</label><input value="${s.formClient.name}" oninput="formClient('name',this.value)" placeholder="Nome da cliente"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Telefone</label><input value="${s.formClient.phone}" oninput="formClient('phone',this.value)" placeholder="(11) 99999-9999" type="tel"></div>
+          <div class="form-group"><label>WhatsApp</label><input value="${s.formClient.whatsapp}" oninput="formClient('whatsapp',this.value)" placeholder="(11) 99999-9999" type="tel"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Data de nascimento</label><input type="date" value="${s.formClient.birth}" oninput="formClient('birth',this.value)"></div>
+          <div class="form-group"><label>Status</label><select onchange="formClient('active',this.value==='1')"><option value="1" ${s.formClient.active?'selected':''}>Ativo</option><option value="0" ${!s.formClient.active?'selected':''}>Inativo</option></select></div>
+        </div>
+        <div class="form-group"><label>Observacoes</label><textarea rows="3" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--card-border);font-size:13px;outline:none;color:var(--text-primary);background:var(--input-bg);box-sizing:border-box;resize:none" oninput="formClient('notes',this.value)" placeholder="Ex: alergica a amonia, prefere hidratacao">${s.formClient.notes}</textarea></div>
+        <div style="display:flex;gap:8px"><button class="btn-secondary" onclick="closeClientModal()">Cancelar</button><button class="btn-gold" onclick="saveClient()">${isEdit?'Salvar':'Adicionar'}</button></div>
+      </div>
+    </div>`
+}
+
 /* === ACTIONS === */
 function setTab(t){state.tab=t;state.subtab=null;state.clientDetail=null;render()}
 function selectDate(d){state.selectedDate=d;render()}
@@ -771,8 +939,69 @@ function deleteTrans(id){
 
 /* CLIENTS */
 function searchClient(v){state.clientSearch=v;render()}
-function viewClient(name){state.clientDetail=name;state.subtab='clientDetail';render()}
+function setClientFilter(f){state.clientFilter=f;render()}
+function setClientSort(s){state.clientSort=s;render()}
+function viewClient(name){
+  syncClients()
+  state.clientDetail=name;state.subtab='clientDetail';render()
+}
 function goBack(){state.subtab=null;state.clientDetail=null;render()}
+
+function openClientModal(cl){
+  state.showClientModal=true
+  state.editingClient=cl||null
+  state.formClient=cl?{name:cl.name,phone:cl.phone||'',whatsapp:cl.whatsapp||'',birth:cl.birth||'',notes:cl.notes||'',active:cl.active!==false}:{name:'',phone:'',whatsapp:'',birth:'',notes:'',active:true}
+  render()
+}
+function closeClientModal(e){if(e&&e.target!==e.currentTarget)return;state.showClientModal=false;state.editingClient=null;render()}
+function formClient(f,v){state.formClient[f]=v}
+function saveClient(){
+  const f=state.formClient
+  if(!f.name)return toast('Digite o nome do cliente')
+  if(state.editingClient){
+    state.clients=state.clients.map(c=>c.id===state.editingClient.id?{...c,name:f.name,phone:f.phone,whatsapp:f.whatsapp,birth:f.birth,notes:f.notes,active:f.active}:c)
+  }else{
+    if(state.clients.find(c=>c.name===f.name))return toast('Cliente ja existe')
+    state.clients.push({id:Date.now(),name:f.name,phone:f.phone,whatsapp:f.whatsapp,birth:f.birth,notes:f.notes,active:f.active,createdAt:today()})
+  }
+  save();state.showClientModal=false;state.editingClient=null;toast('Cliente salvo!');render()
+}
+function editClientByName(name){
+  const cl=state.clients.find(c=>c.name===name)
+  openClientModal(cl||{name,phone:'',whatsapp:'',birth:'',notes:'',active:true})
+}
+function deleteClient(name){
+  if(!confirm('Excluir cliente "'+name+'"? Os agendamentos serao mantidos.'))return
+  state.clients=state.clients.filter(c=>c.name!==name);save();toast('Cliente removido');goBack();render()
+}
+function startBookingFromClient(name){
+  state.stepModal=true;state.step=1;state.editingAppt=null
+  state.formAppt={client:name,service:state.services[0]?state.services[0].name:'',prof:'',time:'09:00',date:today(),value:''}
+  state.subtab=null;state.clientDetail=null;state.tab='agenda'
+  render()
+  setTimeout(()=>{state.step=3;render()},100)
+}
+
+function exportClientCSV(){
+  syncClients()
+  const rows=[['Nome','Telefone','WhatsApp','Nascimento','Visitas','Total Gasto','Ultima Visita','Observacoes']]
+  state.clients.forEach(c=>{
+    const info=getClientInfo(c.name)
+    rows.push([c.name,c.phone||'',c.whatsapp||'',c.birth||'',info.apps.length,info.total,info.lastAppt?info.lastAppt.date:'',c.notes||''])
+  })
+  const csv=rows.map(r=>r.map(v=>'"'+(v||'').toString().replace(/"/g,'""')+'"').join(',')).join('\n')
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'})
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='clientes-'+today()+'.csv';a.click()
+  toast('CSV exportado!')
+}
+function exportClientWhatsApp(){
+  syncClients()
+  const nums=[...new Set(state.clients.filter(c=>c.whatsapp||c.phone).map(c=>'55'+(c.whatsapp||c.phone).replace(/[^0-9]/g,'')))]
+  if(!nums.length)return toast('Nenhum contato com WhatsApp')
+  const text=encodeURIComponent('Oi! Passando pra avisar que temos horarios disponiveis no Studio Glamour essa semana. Me chama pra reservar! 💇‍♀️')
+  window.open('https://wa.me/?text='+text,'_blank')
+  toast(nums.length+' contatos copiados para lista de transmissao')
+}
 
 /* SERVICES */
 function openServiceModal(service){
