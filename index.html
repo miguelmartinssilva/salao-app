@@ -749,15 +749,20 @@ function step2(pros){
 
 function step3(s){
   return`
-    <div class="form-group"><label>Data e horario</label></div>
+    <div class="form-group"><label>Nome da cliente</label><input placeholder="Nome" value="${s.formAppt.client}" oninput="formAppt('client',this.value)"></div>
+    <div class="form-group" style="margin-top:8px"><label>Data e horario</label></div>
     <div class="form-row">
       <div class="form-group"><input type="date" value="${s.formAppt.date}" oninput="formAppt('date',this.value)"></div>
       <div class="form-group"><input type="time" value="${s.formAppt.time}" oninput="formAppt('time',this.value)"></div>
     </div>
     <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:4px">
       ${['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00'].map(t=>
-        `<span class="service-chip${s.formAppt.time===t?' active':''}" onclick="formAppt('time','${t}')">${t}</span>`
+        `<span class="service-chip${s.formAppt.time===t?' active':''}" onclick="formAppt('time','${t}');render()">${t}</span>`
       ).join('')}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn-secondary" onclick="prevStep()">Voltar</button>
+      <button class="btn-gold" onclick="nextStep()">Prosseguir</button>
     </div>
   `
 }
@@ -873,6 +878,7 @@ function stepSelectPro(name){
   state.formAppt.prof=name;state.step=3;render()
 }
 function prevStep(){state.step--;render()}
+function nextStep(){state.step++;render()}
 function finishBooking(){
   const f=state.formAppt
   if(!f.client||!f.service||!f.value)return toast('Preencha todos os campos')
