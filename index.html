@@ -952,7 +952,7 @@ function openTransModal(type){
   render()
 }
 function closeTransModal(e){if(e&&e.target!==e.currentTarget)return;state.showTransModal=false;render()}
-function formTrans(f,v){state.formTrans[f]=v;render()}
+function formTrans(f,v){state.formTrans[f]=v}
 function saveTrans(){
   const f=state.formTrans
   if(!f.desc||!f.value)return toast('Preencha todos os campos')
