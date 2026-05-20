@@ -182,6 +182,12 @@ input,select,button,textarea{font-family:inherit;font-size:inherit}
 .sort-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
 .client-count{font-size:11px;color:var(--text);margin-bottom:8px;padding:0 2px}
 .service-tag{display:inline-block;padding:2px 8px;border-radius:10px;background:rgba(201,168,76,.12);color:var(--gold);font-size:9px;font-weight:600;margin:2px}
+.config-row{display:flex;align-items:center;gap:8px;padding:6px 0}
+.config-label{font-size:11px;color:var(--text);flex-shrink:0;min-width:80px}
+.config-input{background:var(--input-bg);border:1px solid var(--card-border);border-radius:6px;padding:6px 8px;font-size:12px;color:var(--text-primary);outline:none;flex:1;min-width:0}
+.config-input:focus{border-color:var(--gold)}
+.chip{display:inline-block;padding:5px 10px;border-radius:14px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--card-border);background:var(--card);color:var(--text);transition:all .2s;user-select:none}
+.chip.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
 </style>
 </head>
 <body>
@@ -224,10 +230,11 @@ let state = {
   formService:{name:'',price:''},
   formPro:{name:''},
   formClient:{name:'',phone:'',whatsapp:'',birth:'',notes:'',active:true},
-  notifEnabled:load('notifEnabled',false)
+  notifEnabled:load('notifEnabled',false),
+  config:load('config',{salonName:'Martins MegaHair',logo:'&#9986;',phone:'',address:'',openTime:'08:00',closeTime:'18:00',workingDays:[0,1,2,3,4,5,6],whatsapp:''})
 }
 
-function save(){localStorage.setItem('appts',JSON.stringify(state.appointments));localStorage.setItem('trans',JSON.stringify(state.transactions));localStorage.setItem('services',JSON.stringify(state.services));localStorage.setItem('pros',JSON.stringify(state.pros));localStorage.setItem('clients',JSON.stringify(state.clients));localStorage.setItem('darkMode',JSON.stringify(state.darkMode));localStorage.setItem('notifEnabled',JSON.stringify(state.notifEnabled))}
+function save(){localStorage.setItem('appts',JSON.stringify(state.appointments));localStorage.setItem('trans',JSON.stringify(state.transactions));localStorage.setItem('services',JSON.stringify(state.services));localStorage.setItem('pros',JSON.stringify(state.pros));localStorage.setItem('clients',JSON.stringify(state.clients));localStorage.setItem('darkMode',JSON.stringify(state.darkMode));localStorage.setItem('notifEnabled',JSON.stringify(state.notifEnabled));localStorage.setItem('config',JSON.stringify(state.config))}
 
 function svg(path,size=16){return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`}
 const I={
@@ -278,7 +285,7 @@ function render(){
     {id:'agenda',label:'Agenda',icon:I.cal},
     {id:'financeiro',label:'Financas',icon:I.fin},
     {id:'clientes',label:'Clientes',icon:I.cli},
-    {id:'servicos',label:'Servicos',icon:I.servicos},
+    {id:'config',label:'Config',icon:I.settings},
   ]
 
   const stepsHtml=s.stepModal?`
@@ -295,8 +302,8 @@ function render(){
   app.innerHTML=`
 <header class="header">
   <div class="header-brand">
-    <div class="header-logo">&#9986;</div>
-    <span class="header-title">Martins MegaHair</span>
+    <div class="header-logo">${s.config.logo||'&#9986;'}</div>
+    <span class="header-title">${s.config.salonName||'Martins MegaHair'}</span>
   </div>
   <div class="header-actions">
     <button class="icon-btn" onclick="toggleDark()" title="Modo escuro">${svg(s.darkMode?I.sun:I.moon,18)}</button>
@@ -314,7 +321,7 @@ function render(){
     s.tab==='agenda'?renderAgenda(s,firstDay,daysInMonth,apptDates,todayAppts):
     s.tab==='financeiro'?renderFinance(entradas,saidas,lucro,filteredTrans,s.filterFin):
     s.tab==='clientes'?renderClients(s.clientSearch,filteredClients,s.appointments,colors,s):
-    s.tab==='servicos'?renderServicos(s):
+    s.tab==='config'?renderConfig(s):
     ''}
 </main>
 
@@ -633,24 +640,54 @@ function renderClientDetail(s,colors){
   `
 }
 
-function renderServicos(s){
+function renderConfig(s){
+  const cfg=s.config
+  const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sab']
   return`
     <div class="card">
-      <div class="card-title">Configuracoes</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
-        <span style="font-size:12px;color:var(--text-primary)">Modo escuro</span>
-        <button class="toggle${s.darkMode?' on':''}" onclick="toggleDark()"><span class="knob"></span></button>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
-        <span style="font-size:12px;color:var(--text-primary)">Notificacoes <span class="badge badge-green">Novo</span></span>
-        <button class="toggle${s.notifEnabled?' on':''}" onclick="toggleNotif()"><span class="knob"></span></button>
-      </div>
-      ${s.notifEnabled?`<div style="font-size:10px;color:var(--text);padding:4px 0">Lembretes ativados para agendamentos</div>`:''}
-      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--card-border)">
-        <button onclick="clearData()" style="background:none;border:1px solid var(--red);color:var(--red);border-radius:8px;padding:8px 16px;font-size:11px;cursor:pointer;width:100%;font-weight:600">Limpar todos os dados</button>
+      <div class="card-title" style="margin-bottom:4px">👤 Perfil</div>
+      <div class="config-row"><span class="config-label">Nome do salao</span><input class="config-input" value="${cfg.salonName}" oninput="updCfg('salonName',this.value)"></div>
+      <div class="config-row"><span class="config-label">Logo</span><input class="config-input" value="${cfg.logo}" oninput="updCfg('logo',this.value)" placeholder="Emoji ou texto"></div>
+      <div class="config-row"><span class="config-label">Telefone</span><input class="config-input" value="${cfg.phone}" oninput="updCfg('phone',this.value)" placeholder="(11) 99999-9999"></div>
+      <div class="config-row" style="flex-direction:column;align-items:stretch;gap:4px">
+        <span class="config-label">Endereco</span>
+        <input class="config-input" value="${cfg.address}" oninput="updCfg('address',this.value)" placeholder="Rua, numero, bairro" style="width:100%">
       </div>
     </div>
+
+    <div class="card">
+      <div class="card-title" style="margin-bottom:4px">🕒 Horarios</div>
+      <div class="config-row"><span class="config-label">Abertura</span><input class="config-input" type="time" value="${cfg.openTime}" oninput="updCfg('openTime',this.value)"></div>
+      <div class="config-row"><span class="config-label">Fechamento</span><input class="config-input" type="time" value="${cfg.closeTime}" oninput="updCfg('closeTime',this.value)"></div>
+      <div style="margin-top:8px">
+        <div class="config-label" style="margin-bottom:6px">Dias de funcionamento</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          ${days.map((d,i)=>`<span class="chip${cfg.workingDays.includes(i)?' active':''}" onclick="toggleDay(${i})">${d}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="margin-bottom:4px">📲 Notificacoes</div>
+      <div class="config-row"><span class="config-label">Lembrete de agendamento</span><button class="toggle${s.notifEnabled?' on':''}" onclick="toggleNotif()"><span class="knob"></span></button></div>
+      ${s.notifEnabled?`<div style="font-size:10px;color:var(--text);padding:2px 0 6px">Lembretes ativados</div>`:''}
+      <div class="config-row"><span class="config-label">WhatsApp</span><input class="config-input" value="${cfg.whatsapp}" oninput="updCfg('whatsapp',this.value)" placeholder="(11) 99999-9999"></div>
+    </div>
+
+    <div class="card">
+      <div class="config-row"><span class="config-label">Modo escuro</span><button class="toggle${s.darkMode?' on':''}" onclick="toggleDark()"><span class="knob"></span></button></div>
+    </div>
+
+    <div class="card">
+      <button onclick="clearData()" style="background:none;border:1px solid var(--red);color:var(--red);border-radius:8px;padding:10px;font-size:12px;cursor:pointer;width:100%;font-weight:600">${svg(I.trash,12)} Limpar todos os dados</button>
+    </div>
   `
+}
+function updCfg(f,v){state.config[f]=v;localStorage.setItem('config',JSON.stringify(state.config))}
+function toggleDay(i){
+  const d=state.config.workingDays
+  state.config.workingDays=d.includes(i)?d.filter(x=>x!==i):[...d,i].sort()
+  localStorage.setItem('config',JSON.stringify(state.config));render()
 }
 
 function renderApptModal(s,stepsHtml){
@@ -813,7 +850,7 @@ function selectDate(d){state.selectedDate=d;render()}
 function prevMonth(){if(state.calMonth===0){state.calMonth=11;state.calYear--}else state.calMonth--;render()}
 function nextMonth(){if(state.calMonth===11){state.calMonth=0;state.calYear++}else state.calMonth++;render()}
 
-function openSettings(){state.tab='servicos';state.subtab=null;render()}
+function openSettings(){state.tab='config';state.subtab=null;render()}
 /* BOOKING STEP */
 function startBooking(){
   state.showModal=false;state.stepModal=true;state.step=1;state.editingAppt=null
