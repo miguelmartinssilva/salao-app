@@ -207,6 +207,8 @@ input,select,button,textarea{font-family:inherit;font-size:inherit}
 .agenda-hoje{padding:4px 10px;border-radius:12px;border:1px solid var(--gold);background:none;color:var(--gold);font-size:10px;font-weight:700;cursor:pointer;margin-left:auto;white-space:nowrap}
 .agenda-search{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--card-border);background:var(--input-bg);color:var(--text-primary);font-size:12px;outline:none;box-sizing:border-box}
 .agenda-search:focus{border-color:var(--gold)}
+.fin-views{display:flex;gap:4px;margin-bottom:8px}
+.trans-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .agenda-views{display:flex;gap:4px;margin:6px 0 10px}
 .agenda-view-btn{padding:5px 14px;border-radius:14px;border:1px solid var(--card-border);background:var(--card);color:var(--text);font-size:10px;font-weight:600;cursor:pointer;transition:all .2s}
 .agenda-view-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
@@ -268,7 +270,7 @@ let state = {
   formAppt:{client:'',service:'',time:'09:00',date:today(),value:''},
   formTrans:{desc:'',type:'entrada',value:'',date:today(),cat:'Servico'},
   formClient:{name:'',phone:'',whatsapp:'',birth:'',notes:'',active:true},
-  agendaView:'hoje',agendaSearch:'',showFreeSlots:true,agendaSelAppt:null,
+  agendaView:'hoje',agendaSearch:'',showFreeSlots:true,agendaSelAppt:null,finView:'mes',
   notifEnabled:load('notifEnabled',false),
   config:load('config',{salonName:'Martins MegaHair',logo:'&#9986;',phone:'',address:'',openTime:'08:00',closeTime:'18:00',workingDays:[0,1,2,3,4,5,6],whatsapp:''})
 }
@@ -517,13 +519,46 @@ function schedActions(id){
 }
 
 function renderFinance(entradas,saidas,lucro,filteredTrans,filterFin){
+  const s=state,cfg=s.config
+  const now=new Date()
+  /* Determine period range */
+  let periodStart,periodEnd,periodLabel
+  if(s.finView==='hoje'){
+    periodStart=periodEnd=today()
+    periodLabel='Hoje'
+  }else if(s.finView==='semana'){
+    const dow=now.getDay(),seg=new Date(now);seg.setDate(now.getDate()-(dow===0?6:dow-1))
+    periodStart=seg.toISOString().slice(0,10);periodEnd=new Date(seg);periodEnd.setDate(seg.getDate()+6);periodEnd=periodEnd.toISOString().slice(0,10)
+    periodLabel='Esta semana'
+  }else{
+    periodStart=today().slice(0,7)+'-01'
+    const last=new Date(now.getFullYear(),now.getMonth()+1,0)
+    periodEnd=last.toISOString().slice(0,10)
+    periodLabel=MONTHS[now.getMonth()]
+  }
+
+  const periodTrans=s.transactions.filter(t=>t.date>=periodStart&&t.date<=periodEnd)
+  const periodEnt=periodTrans.filter(t=>t.type==='entrada').reduce((x,t)=>x+t.value,0)
+  const periodSai=periodTrans.filter(t=>t.type==='saida').reduce((x,t)=>x+t.value,0)
+  const periodLuc=periodEnt-periodSai
+
+  /* Group transactions by date */
+  const groups={}
+  filteredTrans.forEach(t=>{
+    const d=t.date;if(!groups[d])groups[d]=[]
+    groups[d].push(t)
+  })
+  const sortedDates=Object.keys(groups).sort().reverse()
+
   return`
+    <div class="fin-views"><button class="agenda-view-btn${s.finView==='hoje'?' active':''}" onclick="setFinView('hoje')">Hoje</button><button class="agenda-view-btn${s.finView==='semana'?' active':''}" onclick="setFinView('semana')">Semana</button><button class="agenda-view-btn${s.finView==='mes'?' active':''}" onclick="setFinView('mes')">Mes</button></div>
+
     <div class="fin-summary">
-      <div class="fin-card"><div class="fin-label">Entradas</div><div class="fin-value fin-green">R$ ${entradas.toLocaleString('pt-BR')}</div></div>
-      <div class="fin-card"><div class="fin-label">Saidas</div><div class="fin-value fin-red">R$ ${saidas.toLocaleString('pt-BR')}</div></div>
-      <div class="fin-card"><div class="fin-label">Lucro</div><div class="fin-value fin-gold">R$ ${lucro.toLocaleString('pt-BR')}</div></div>
+      <div class="fin-card"><div class="fin-label">Entradas</div><div class="fin-value fin-green">R$ ${periodEnt.toLocaleString('pt-BR')}</div></div>
+      <div class="fin-card"><div class="fin-label">Saidas</div><div class="fin-value fin-red">R$ ${periodSai.toLocaleString('pt-BR')}</div></div>
+      <div class="fin-card"><div class="fin-label">Saldo</div><div class="fin-value${periodLuc>=0?' fin-green':' fin-red'}">${periodLuc>=0?'+':'-'} R$ ${Math.abs(periodLuc).toLocaleString('pt-BR')}</div></div>
     </div>
-    <button class="btn-primary" onclick="openTransModal()">${svg(I.plus,13)} Novo Lancamento</button>
+
     <div class="card">
       <div class="filter-bar">
         <button class="filter-btn${filterFin==='todos'?' active':''}" onclick="setFilter('todos')">Todos</button>
@@ -531,15 +566,32 @@ function renderFinance(entradas,saidas,lucro,filteredTrans,filterFin){
         <button class="filter-btn${filterFin==='saida'?' active':''}" onclick="setFilter('saida')">Saidas</button>
       </div>
       ${filteredTrans.length===0?`<div class="empty-state"><div class="icon">&#128176;</div><div class="msg">Nenhum lancamento</div></div>`:
-        filteredTrans.map(t=>`
-          <div class="trans-item">
-            <div><div class="trans-desc">${t.desc}</div><div class="trans-meta">${t.date.split('-').reverse().join('/')} • ${t.cat}</div></div>
-            <div style="display:flex;align-items:center;gap:6px">
-              <span class="trans-value" style="color:${t.type==='entrada'?'var(--green)':'var(--red)'}">${t.type==='entrada'?'+':'-'} R$ ${t.value.toLocaleString('pt-BR')}</span>
-              <button onclick="deleteTrans(${t.id})" style="background:none;border:none;cursor:pointer;color:var(--red);padding:2px">${svg(I.trash,11)}</button>
+        sortedDates.map(d=>`
+          <div style="font-size:10px;font-weight:700;color:var(--text);margin:8px 0 4px">${d.split('-').reverse().join('/')}</div>
+          ${groups[d].map(t=>`
+            <div class="trans-item">
+              <div class="trans-dot" style="background:${t.type==='entrada'?'var(--green)':'var(--red)'}"></div>
+              <div><div class="trans-desc">${t.desc}</div><div class="trans-meta">${t.cat}</div></div>
+              <span class="trans-value" style="color:${t.type==='entrada'?'var(--green)':'var(--red)'};margin-left:auto">${t.type==='entrada'?'+':'-'}R$ ${t.value.toLocaleString('pt-BR')}</span>
+              <button onclick="deleteTrans(${t.id})" style="background:none;border:none;cursor:pointer;color:var(--red);padding:2px;flex-shrink:0">${svg(I.trash,11)}</button>
             </div>
-          </div>
+          `).join('')}
         `).join('')}
+    </div>
+
+    <div style="display:flex;gap:6px;margin-bottom:8px">
+      <button class="btn-primary" onclick="openTransModal('entrada')" style="flex:1;margin:0">${svg(I.plus,12)} Entrada</button>
+      <button class="btn-secondary" onclick="openTransModal('saida')" style="flex:1;margin:0;background:rgba(201,122,122,.12);color:var(--red);border-color:var(--red)">${svg(I.plus,12)} Despesa</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="margin-bottom:8px">Resumo — ${periodLabel}</div>
+      <div class="sem-grid">
+        <div class="sem-item"><div class="sem-val" style="color:var(--green)">R$ ${periodEnt}</div><div class="sem-lbl">Faturamento</div></div>
+        <div class="sem-item"><div class="sem-val" style="color:var(--red)">R$ ${periodSai}</div><div class="sem-lbl">Despesas</div></div>
+        <div class="sem-item"><div class="sem-val" style="color:var(--gold)">R$ ${periodLuc}</div><div class="sem-lbl">Lucro</div></div>
+        <div class="sem-item"><div class="sem-val">${periodTrans.length}</div><div class="sem-lbl">Movimentacoes</div></div>
+      </div>
     </div>
   `
 }
@@ -842,7 +894,7 @@ function renderTransModal(s){
   return`
     <div class="modal-overlay" onclick="closeTransModal(event)">
       <div class="modal-content">
-        <div class="modal-header"><h3>Novo Lancamento</h3><button class="modal-close" onclick="closeTransModal()">${svg(I.x,16)}</button></div>
+        <div class="modal-header"><h3>${s.formTrans.type==='entrada'?'Nova Entrada':'Nova Despesa'}</h3><button class="modal-close" onclick="closeTransModal()">${svg(I.x,16)}</button></div>
         <div class="type-toggle">
           <div class="type-btn${s.formTrans.type==='entrada'?' active':''}" onclick="formTrans('type','entrada');render()">Entrada</div>
           <div class="type-btn red${s.formTrans.type==='saida'?' active':''}" onclick="formTrans('type','saida');render()">Saida</div>
@@ -956,7 +1008,12 @@ function updateStatus(id,st){
 
 /* FINANCE */
 function setFilter(f){state.filterFin=f;render()}
-function openTransModal(){state.showTransModal=true;state.formTrans={desc:'',type:'entrada',value:'',date:today(),cat:'Servico'};render()}
+function setFinView(v){state.finView=v;render()}
+function openTransModal(type){
+  state.showTransModal=true
+  state.formTrans={desc:'',type:type||'entrada',value:'',date:today(),cat:type==='saida'?'Material':'Servico'}
+  render()
+}
 function closeTransModal(e){if(e&&e.target!==e.currentTarget)return;state.showTransModal=false;render()}
 function formTrans(f,v){state.formTrans[f]=v;render()}
 function saveTrans(){
