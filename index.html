@@ -2,735 +2,811 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1a0a14">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" id="theme-color" content="#1a0a14">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="data:application/json,{}" id="manifest-link">
 <title>Studio Glamour</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{
-  --gold:#c9a84c;
-  --gold-light:#e8c97a;
-  --dark:#1a0a14;
-  --dark2:#2d1020;
-  --rose:#fdf8f4;
-  --rose2:#fdf0e8;
-  --text:#9b7060;
-  --green:#7dc9a0;
-  --red:#c97a7a;
-  --pink:#e0a0c0;
-}
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--rose);color:var(--dark);overflow-x:hidden}
+:root{--gold:#c9a84c;--gold-light:#e8c97a;--dark:#1a0a14;--dark2:#2d1020;--rose:#fdf8f4;--rose2:#fdf0e8;--text:#9b7060;--green:#7dc9a0;--red:#c97a7a;--pink:#e0a0c0;--bg:#fdf8f4;--card:#fff;--card-border:#fdf0e8;--input-bg:#fdf8f4;--shadow:rgba(180,100,120,.08);--text-primary:#1a0a14;--text-secondary:#2d1020}
+.dark{--dark:#e8dcd4;--dark2:#d4c8c0;--rose:#1a0a14;--rose2:#2d1020;--text:#a09088;--bg:#0d060e;--card:#1a0a14;--card-border:#2d1020;--input-bg:#2d1020;--shadow:rgba(0,0,0,.3);--text-primary:#e8dcd4;--text-secondary:#d4c8c0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;transition:background .3s,color .3s}
 input,select,button,textarea{font-family:inherit;font-size:inherit}
-
-/* HEADER */
-.header{
-  background:linear-gradient(160deg,var(--dark),var(--dark2));
-  padding:14px 16px;display:flex;justify-content:space-between;align-items:center;
-  position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)
-}
-.header-brand{display:flex;align-items:center;gap:10px}
-.header-logo{
-  width:34px;height:34px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gold),var(--gold-light));
-  display:flex;align-items:center;justify-content:center;font-size:16px
-}
-.header-title{color:var(--gold);font-size:15px;font-weight:700;font-style:italic}
-.header-btn{
-  background:linear-gradient(135deg,var(--gold),var(--gold-light));
-  border:none;border-radius:10px;color:var(--dark);padding:9px 14px;
-  font-size:12px;font-weight:700;cursor:pointer
-}
-
-/* TAB BAR */
-.tabbar{
-  display:flex;background:#fff;padding:6px 4px;
-  position:sticky;top:62px;z-index:99;box-shadow:0 1px 8px rgba(0,0,0,.06);
-  justify-content:space-around
-}
-.tabbar button{
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:8px 10px;border-radius:10px;border:none;cursor:pointer;
-  background:transparent;color:var(--text);font-size:9px;font-weight:600;width:100%
-}
+.header{background:linear-gradient(160deg,var(--dark),var(--dark2));padding:12px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.header-brand{display:flex;align-items:center;gap:8px}
+.header-logo{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.header-title{color:var(--gold);font-size:14px;font-weight:700;font-style:italic}
+.header-actions{display:flex;gap:6px;align-items:center}
+.header-btn{background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:8px;color:var(--dark);padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.icon-btn{background:none;border:none;cursor:pointer;color:rgba(255,220,200,.6);padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.icon-btn:hover{color:var(--gold)}
+.tabbar{display:flex;background:var(--card);padding:5px 4px;position:sticky;top:56px;z-index:99;box-shadow:0 1px 8px var(--shadow);justify-content:space-around;transition:background .3s}
+.tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;border-radius:8px;border:none;cursor:pointer;background:transparent;color:var(--text);font-size:9px;font-weight:600;width:100%;transition:all .2s}
 .tabbar .active{background:linear-gradient(135deg,#c9a84c22,#c9a84c11);color:var(--gold)}
-.tabbar svg{width:22px;height:22px}
-
-/* MAIN */
-.main{padding:14px 14px 90px}
-.page-title{margin:0 0 4px;font-size:20px;color:var(--dark);font-weight:400}
-.page-sub{color:var(--text);font-size:12px;margin-bottom:16px}
-
-/* KPIS */
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.kpi-card{
-  background:#fff;border-radius:12px;padding:14px;box-shadow:0 1px 8px rgba(180,100,120,.08);
-  border-top:3px solid var(--gold)
-}
-.kpi-label{color:var(--text);font-size:9px;text-transform:uppercase;margin-bottom:4px;font-weight:600}
-.kpi-value{font-size:20px;font-weight:700;color:var(--dark)}
-
-/* CARDS */
-.card{
-  background:#fff;border-radius:12px;padding:14px;
-  box-shadow:0 1px 8px rgba(180,100,120,.08);margin-bottom:12px
-}
-.card-title{font-size:14px;font-weight:600;color:var(--dark);margin-bottom:12px}
-
-/* APPOINTMENT ITEM */
-.appt-item{
-  display:flex;align-items:center;gap:10px;padding:10px 0;
-  border-bottom:1px solid var(--rose2)
-}
-.appt-time{width:48px;text-align:center}
-.appt-time .t{font-size:14px;font-weight:700;color:var(--dark)}
-.appt-info{flex:1}
-.appt-info .name{font-size:13px;font-weight:600;color:var(--dark2)}
-.appt-info .service{font-size:11px;color:var(--text)}
-.appt-status{
-  font-size:9px;padding:3px 10px;border-radius:12px;
-  font-weight:700;text-transform:uppercase;border:none;cursor:pointer
-}
-
-/* CALENDAR */
-.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.cal-header button{background:none;border:none;cursor:pointer;color:var(--text);padding:4px}
-.cal-header span{font-size:13px;font-weight:600}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
-.cal-day-header{font-size:9px;color:var(--text);padding:4px 0;font-weight:600}
-.cal-day{
-  aspect-ratio:1;border-radius:50%;border:none;cursor:pointer;font-size:12px;
-  background:transparent;color:var(--dark2);font-weight:400;position:relative
-}
+.tabbar svg{width:20px;height:20px}
+.main{padding:12px 12px 80px;max-width:500px;margin:0 auto}
+.page-title{font-size:18px;color:var(--text-primary);font-weight:400;margin-bottom:12px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.kpi-card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 1px 8px var(--shadow);border-top:3px solid var(--gold);transition:background .3s}
+.kpi-label{color:var(--text);font-size:9px;text-transform:uppercase;margin-bottom:3px;font-weight:600;letter-spacing:.3px}
+.kpi-value{font-size:18px;font-weight:700;color:var(--text-primary)}
+.card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 1px 8px var(--shadow);margin-bottom:12px;transition:background .3s}
+.card-title{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:10px}
+.appt-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--card-border);transition:border-color .3s}
+.appt-item:last-child{border-bottom:none}
+.appt-time{width:44px;text-align:center;flex-shrink:0}
+.appt-time .t{font-size:13px;font-weight:700;color:var(--text-primary)}
+.appt-info{flex:1;min-width:0}
+.appt-info .name{font-size:12px;font-weight:600;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.appt-info .service{font-size:10px;color:var(--text)}
+.appt-status{font-size:8px;padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase;border:none;cursor:pointer;flex-shrink:0}
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal-header button{background:none;border:none;cursor:pointer;color:var(--text);padding:4px;border-radius:6px}
+.cal-header span{font-size:13px;font-weight:600;color:var(--text-primary)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;text-align:center}
+.cal-day-header{font-size:8px;color:var(--text);padding:3px 0;font-weight:600}
+.cal-day{aspect-ratio:1;border-radius:50%;border:none;cursor:pointer;font-size:11px;background:transparent;color:var(--text-primary);font-weight:400;position:relative;display:flex;align-items:center;justify-content:center;padding:0}
 .cal-day.selected{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--dark);font-weight:700}
-.cal-day .dot{
-  position:absolute;bottom:2px;left:50%;transform:translateX(-50%);
-  width:4px;height:4px;border-radius:50%;background:var(--gold)
-}
-
-/* FINANCE SUMMARY */
-.fin-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
-.fin-card{background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 8px rgba(180,100,120,.08)}
-.fin-label{font-size:9px;color:var(--text);text-transform:uppercase;font-weight:600;margin-bottom:3px}
-.fin-value{font-size:16px;font-weight:700}
+.cal-day .dot{position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--gold)}
+.fin-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.fin-card{background:var(--card);border-radius:10px;padding:10px;box-shadow:0 1px 8px var(--shadow);transition:background .3s}
+.fin-label{font-size:8px;color:var(--text);text-transform:uppercase;font-weight:600;margin-bottom:2px}
+.fin-value{font-size:14px;font-weight:700}
 .fin-green{color:var(--green)}.fin-red{color:var(--red)}.fin-gold{color:var(--gold)}
-
-.filter-bar{display:flex;gap:6px;margin-bottom:12px}
-.filter-btn{
-  padding:6px 14px;border-radius:20px;border:1px solid var(--rose2);
-  font-size:11px;cursor:pointer;font-weight:600
-}
+.filter-bar{display:flex;gap:5px;margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.filter-btn{padding:5px 12px;border-radius:16px;border:1px solid var(--card-border);font-size:10px;cursor:pointer;font-weight:600;background:var(--card);color:var(--text);white-space:nowrap;transition:all .2s}
 .filter-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
-
-.trans-item{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:10px 0;border-bottom:1px solid var(--rose2)
-}
+.trans-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--card-border)}
 .trans-item:last-child{border:none}
-.trans-desc{font-size:12px;color:var(--dark2)}
-.trans-meta{font-size:10px;color:var(--text)}
-.trans-value{font-weight:700;font-size:14px}
-
-/* CLIENT GRID */
-.client-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.client-card{
-  border-radius:12px;border:1px solid var(--rose2);padding:14px;background:var(--rose)
-}
-.client-avatar{
-  width:38px;height:38px;border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:16px;font-weight:700;color:var(--dark);margin-bottom:8px
-}
-.client-name{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:4px}
-.client-stats{display:flex;justify-content:space-between;font-size:10px}
+.trans-desc{font-size:12px;color:var(--text-secondary)}
+.trans-meta{font-size:9px;color:var(--text);margin-top:1px}
+.trans-value{font-weight:700;font-size:13px}
+.client-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.client-card{border-radius:10px;border:1px solid var(--card-border);padding:12px;background:var(--card);cursor:pointer;transition:all .2s}
+.client-card:active{transform:scale(.97)}
+.client-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:6px}
+.client-name{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:3px}
+.client-stats{display:flex;justify-content:space-between;font-size:9px}
 .client-stats span:first-child{color:var(--text)}
 .client-stats span:last-child{color:var(--gold);font-weight:700}
-
-/* SEARCH */
-.search-box{position:relative;margin-bottom:12px}
-.search-box input{
-  width:100%;padding:10px 12px 10px 34px;border-radius:10px;
-  border:1px solid var(--rose2);font-size:13px;outline:none;
-  color:var(--dark2);background:var(--rose);box-sizing:border-box
-}
-.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text)}
-
-/* BUTTON */
-.btn-primary{
-  width:100%;background:linear-gradient(135deg,var(--gold),var(--gold-light));
-  border:none;border-radius:10px;color:var(--dark);padding:14px;
-  font-size:14px;font-weight:700;cursor:pointer;margin-bottom:14px
-}
-.btn-secondary{
-  flex:1;padding:12px;border-radius:10px;border:1px solid var(--rose2);
-  background:#fff;color:var(--text);font-size:14px;cursor:pointer;font-weight:600
-}
-.btn-gold{
-  flex:1;padding:12px;border-radius:10px;border:none;
-  background:linear-gradient(135deg,var(--gold),var(--gold-light));
-  color:var(--dark);font-size:14px;font-weight:700;cursor:pointer
-}
-
-/* MODAL */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(26,10,20,.7);display:flex;
-  align-items:flex-end;z-index:200;animation:slideIn .25s ease
-}
-@keyframes slideIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-content{
-  background:#fff;border-radius:20px 20px 0 0;padding:24px 20px;
-  width:100%;box-shadow:0 -10px 40px rgba(26,10,20,.2)
-}
-.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.modal-header h3{font-size:18px;color:var(--dark);font-style:italic}
-.modal-close{background:none;border:none;cursor:pointer;color:var(--text);padding:4px}
-.form-group{margin-bottom:14px}
-.form-group label{
-  font-size:11px;color:var(--text);font-weight:600;text-transform:uppercase;
-  display:block;margin-bottom:5px
-}
-.form-group input,.form-group select{
-  width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--rose2);
-  font-size:14px;outline:none;color:var(--dark2);background:var(--rose);box-sizing:border-box
-}
-.form-row{display:flex;gap:10px}
+.search-box{position:relative;margin-bottom:10px}
+.search-box input{width:100%;padding:9px 10px 9px 32px;border-radius:8px;border:1px solid var(--card-border);font-size:12px;outline:none;color:var(--text-primary);background:var(--input-bg);box-sizing:border-box;transition:border-color .3s}
+.search-box input:focus{border-color:var(--gold)}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text);pointer-events:none}
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:10px;color:var(--dark);padding:12px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:12px;transition:opacity .2s}
+.btn-primary:active{opacity:.8}
+.btn-primary:disabled{opacity:.5;cursor:default}
+.btn-secondary{flex:1;padding:11px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);color:var(--text);font-size:13px;cursor:pointer;font-weight:600;transition:background .3s}
+.btn-gold{flex:1;padding:11px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--dark);font-size:13px;font-weight:700;cursor:pointer}
+.btn-gold:active{opacity:.8}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;z-index:200;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-content{background:var(--card);border-radius:16px 16px 0 0;padding:20px 16px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 -10px 40px rgba(0,0,0,.2);transition:background .3s}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.modal-header h3{font-size:16px;color:var(--text-primary);font-style:italic}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text);padding:4px;border-radius:6px}
+.form-group{margin-bottom:12px}
+.form-group label{font-size:10px;color:var(--text);font-weight:600;text-transform:uppercase;display:block;margin-bottom:4px;letter-spacing:.3px}
+.form-group input,.form-group select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--card-border);font-size:13px;outline:none;color:var(--text-primary);background:var(--input-bg);box-sizing:border-box;transition:border-color .3s,background .3s,color .3s}
+.form-group input:focus,.form-group select:focus{border-color:var(--gold)}
+.form-row{display:flex;gap:8px}
 .form-row .form-group{flex:1}
-
-/* TYPE TOGGLE */
-.type-toggle{display:flex;gap:8px;margin-bottom:14px}
-.type-btn{flex:1;padding:10px;border-radius:10px;border:2px solid var(--rose2);
-  font-size:12px;font-weight:600;cursor:pointer;text-align:center}
+.type-toggle{display:flex;gap:6px;margin-bottom:12px}
+.type-btn{flex:1;padding:9px;border-radius:8px;border:2px solid var(--card-border);font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:all .2s}
 .type-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
 .type-btn.red.active{background:var(--red);border-color:var(--red);color:#fff}
-
-/* EMPTY STATE */
-.empty-state{text-align:center;padding:40px 0;color:#c0a090}
-.empty-state .icon{font-size:40px;margin-bottom:8px}
-.empty-state .msg{font-size:13px}
-
-/* TOAST */
-.toast{
-  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
-  background:var(--dark);color:#fff;padding:10px 20px;border-radius:10px;
-  font-size:13px;z-index:300;animation:fadeIn .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.3)
-}
+.empty-state{text-align:center;padding:30px 0;color:var(--text)}
+.empty-state .icon{font-size:36px;margin-bottom:6px}
+.empty-state .msg{font-size:12px}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:8px 18px;border-radius:8px;font-size:12px;z-index:300;animation:fadeIn .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.3)}
 @keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-
+.spinner{width:18px;height:18px;border:2px solid var(--card-border);border-top-color:var(--gold);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.steps{display:flex;gap:4px;margin-bottom:14px;justify-content:center}
+.step{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all .2s}
+.step.active{background:var(--gold);color:var(--dark)}
+.step.done{background:var(--green);color:#fff}
+.step.pending{background:var(--card-border);color:var(--text)}
+.step-line{width:20px;height:2px;align-self:center;background:var(--card-border);transition:background .2s}
+.step-line.done{background:var(--green)}
 .hidden{display:none}
-.flex{display:flex}.flex-1{flex:1}.gap-8{gap:8px}
-.mb-12{margin-bottom:12px}
+.flex{display:flex}.flex-1{flex:1}.gap-6{gap:6px}.gap-8{gap:8px}
+.mb-8{margin-bottom:8px}.mb-12{margin-bottom:12px}
 .text-center{text-align:center}
+.w-100{width:100%}
+.service-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:16px;border:1px solid var(--card-border);background:var(--card);font-size:11px;cursor:pointer;margin:3px;transition:all .2s}
+.service-chip.active{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--dark);border-color:var(--gold)}
+.service-chip .del{color:var(--red);font-weight:700;margin-left:4px;cursor:pointer}
+.badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:8px;font-weight:700;margin-left:4px;vertical-align:middle}
+.badge-green{background:var(--green);color:#fff}
+.badge-red{background:var(--red);color:#fff}
+.toggle-wrap{display:flex;align-items:center;gap:8px}
+.toggle{width:40px;height:22px;background:var(--card-border);border-radius:11px;position:relative;cursor:pointer;border:none;padding:0;transition:background .2s}
+.toggle.on{background:var(--gold)}
+.toggle .knob{width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on .knob{transform:translateX(18px)}
 </style>
 </head>
 <body>
-
 <div id="app"></div>
-
 <script>
-const $$ = (sel, parent = document) => parent.querySelector(sel)
-const $$$ = (sel, parent = document) => [...parent.querySelectorAll(sel)]
-
+const $$ = s=>document.querySelector(s)
 const DAYS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sab']
 const MONTHS = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
-const SERVICES = ['Corte','Coloracao','Hidratacao','Escova','Progressiva','Luzes','Manicure','Pedicure']
-const STATUS = { confirmado: '#c9a84c', pendente: '#e0a0c0', cancelado: '#bbb', concluido: '#7dc9a0' }
+const STATUS = {confirmado:'#c9a84c',pendente:'#e0a0c0',cancelado:'#bbb',concluido:'#7dc9a0'}
 
-// State
+function today(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+
+function load(key,fallback){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback}catch{return fallback}}
+
+let defServices = ['Corte','Coloracao','Hidratacao','Escova','Progressiva','Luzes','Manicure','Pedicure']
 let state = {
-  tab: 'dashboard',
-  selectedDate: today(),
-  appointments: JSON.parse(localStorage.getItem('appts')) || [
-    { id:1,client:'Ana Paula',service:'Coloracao',time:'09:00',date:'2026-05-20',status:'confirmado',value:180 },
-    { id:2,client:'Carla Mendes',service:'Escova',time:'11:30',date:'2026-05-20',status:'concluido',value:80 },
-    { id:3,client:'Fernanda Lima',service:'Corte',time:'14:00',date:'2026-05-20',status:'confirmado',value:65 },
-    { id:4,client:'Juliana Costa',service:'Hidratacao',time:'15:30',date:'2026-05-20',status:'pendente',value:90 },
-    { id:5,client:'Mariana Silva',service:'Progressiva',time:'09:00',date:'2026-05-21',status:'confirmado',value:280 },
-  ],
-  transactions: JSON.parse(localStorage.getItem('trans')) || [
-    { id:1,desc:'Coloracao - Ana Paula',type:'entrada',value:180,date:'2026-05-19',cat:'Servico' },
-    { id:2,desc:'Tinta L\'Oreal',type:'saida',value:95,date:'2026-05-17',cat:'Material' },
-    { id:3,desc:'Aluguel salao',type:'saida',value:1200,date:'2026-05-10',cat:'Fixo' },
-  ],
-  calMonth: 4, calYear: 2026,
-  filterFin: 'todos',
-  clientSearch: '',
-  toast: null,
-  showModal: false, editingAppt: null,
-  showTransModal: false,
-  formAppt: { client:'', service:SERVICES[0], time:'09:00', date:today(), value:'' },
-  formTrans: { desc:'', type:'entrada', value:'', date:today(), cat:'Servico' }
+  tab:'dashboard',subtab:null,selectedDate:today(),
+  appointments:load('appts',[
+    {id:1,client:'Ana Paula',service:'Coloracao',time:'09:00',date:'2026-05-20',status:'confirmado',value:180,prof:''},
+    {id:2,client:'Carla Mendes',service:'Escova',time:'11:30',date:'2026-05-20',status:'concluido',value:80,prof:''},
+    {id:3,client:'Fernanda Lima',service:'Corte',time:'14:00',date:'2026-05-20',status:'confirmado',value:65,prof:''},
+  ]),
+  transactions:load('trans',[
+    {id:1,desc:'Coloracao - Ana Paula',type:'entrada',value:180,date:'2026-05-19',cat:'Servico'},
+    {id:2,desc:'Tinta L\'Oreal',type:'saida',value:95,date:'2026-05-17',cat:'Material'},
+    {id:3,desc:'Aluguel salao',type:'saida',value:1200,date:'2026-05-10',cat:'Fixo'},
+  ]),
+  services:load('services',defServices.map((n,i)=>({id:i+1,name:n,price:i===0?65:i===1?180:i===2?90:i===3?80:i===4?280:i===5?220:i===6?45:60}))),
+  pros:load('pros',[{id:1,name:'Camila'},{id:2,name:'Juliana'},{id:3,name:'Larissa'}]),
+  calMonth:new Date().getMonth(),calYear:new Date().getFullYear(),
+  filterFin:'todos',clientSearch:'',clientDetail:null,
+  toast:null,loading:false,
+  showModal:false,showTransModal:false,showServicesModal:false,showProModal:false,
+  stepModal:false,step:1,totalSteps:4,
+  editingAppt:null,editingService:null,editingPro:null,
+  darkMode:load('darkMode',false),
+  formAppt:{client:'',service:'',prof:'',time:'09:00',date:today(),value:''},
+  formTrans:{desc:'',type:'entrada',value:'',date:today(),cat:'Servico'},
+  formService:{name:'',price:''},
+  formPro:{name:''},
+  notifEnabled:load('notifEnabled',false)
 }
 
-function today() {
-  const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0,10)
+function save(){localStorage.setItem('appts',JSON.stringify(state.appointments));localStorage.setItem('trans',JSON.stringify(state.transactions));localStorage.setItem('services',JSON.stringify(state.services));localStorage.setItem('pros',JSON.stringify(state.pros));localStorage.setItem('darkMode',JSON.stringify(state.darkMode));localStorage.setItem('notifEnabled',JSON.stringify(state.notifEnabled))}
+
+function svg(path,size=16){return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`}
+const I={
+  dash:svg('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',20),
+  cal:svg('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',20),
+  fin:svg('<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',20),
+  cli:svg('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',20),
+  servicos:svg('<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',20),
+  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  left:'<polyline points="15 18 9 12 15 6"/>',
+  right:'<polyline points="9 18 15 12 9 6"/>',
+  edit:'<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+  trash:'<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  arrowUp:'<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>',
+  arrowDown:'<line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 5 5 12"/>',
+  moon:'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  sun:'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>',
+  bell:'<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  back:'<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
 }
 
-function save() {
-  localStorage.setItem('appts', JSON.stringify(state.appointments))
-  localStorage.setItem('trans', JSON.stringify(state.transactions))
-}
+function render(){
+  const s=state,m=dark()?'dark':''
+  if(s.darkMode)document.documentElement.classList.add('dark')
+  else document.documentElement.classList.remove('dark')
+  document.querySelector('meta[name=theme-color]').content=s.darkMode?'#0d060e':'#1a0a14'
 
-function svg(path, size=18) {
-  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`
-}
+  const app=$$('#app')
+  const todayAppts=s.appointments.filter(a=>a.date===s.selectedDate).sort((a,b)=>a.time.localeCompare(b.time))
+  const entradas=s.transactions.filter(t=>t.type==='entrada').reduce((x,t)=>x+t.value,0)
+  const saidas=s.transactions.filter(t=>t.type==='saida').reduce((x,t)=>x+t.value,0)
+  const lucro=entradas-saidas
+  const apptDates=new Set(s.appointments.map(a=>a.date))
+  const daysInMonth=new Date(s.calYear,s.calMonth+1,0).getDate()
+  const firstDay=new Date(s.calYear,s.calMonth,1).getDay()
+  const filteredTrans=s.transactions.filter(t=>s.filterFin==='todos'||t.type===s.filterFin)
+  const allClients=[...new Set(s.appointments.map(a=>a.client))]
+  const filteredClients=s.clientSearch?allClients.filter(c=>c.toLowerCase().includes(s.clientSearch.toLowerCase())):allClients
+  const colors=['#e0a0c0','#c9a84c','#7dc9a0','#c97a7a','#a0c0e0','#c0a0e0','#e0c0a0','#a0e0c0']
 
-const I = {
-  dash: svg('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',22),
-  cal: svg('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',22),
-  fin: svg('<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',22),
-  cli: svg('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',22),
-  plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
-  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
-  search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
-  left: '<polyline points="15 18 9 12 15 6"/>',
-  right: '<polyline points="9 18 15 12 9 6"/>',
-  edit: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
-  trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
-  arrowUp: '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>',
-  arrowDown: '<line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 5 5 12"/>',
-}
-
-/* RENDER */
-function render() {
-  const s = state
-  const app = $$('#app')
-
-  const todayAppts = s.appointments.filter(a => a.date === s.selectedDate).sort((a,b) => a.time.localeCompare(b.time))
-  const entradas = s.transactions.filter(t => t.type === 'entrada').reduce((sum,t) => sum + t.value, 0)
-  const saidas = s.transactions.filter(t => t.type === 'saida').reduce((sum,t) => sum + t.value, 0)
-  const lucro = entradas - saidas
-  const apptDates = new Set(s.appointments.map(a => a.date))
-
-  const daysInMonth = new Date(s.calYear, s.calMonth + 1, 0).getDate()
-  const firstDay = new Date(s.calYear, s.calMonth, 1).getDay()
-
-  const filteredTrans = s.transactions.filter(t => s.filterFin === 'todos' || t.type === s.filterFin)
-
-  const allClients = [...new Set(s.appointments.map(a => a.client))]
-  const filteredClients = s.clientSearch ? allClients.filter(c => c.toLowerCase().includes(s.clientSearch.toLowerCase())) : allClients
-
-  const avatarColors = ['#e0a0c0','#c9a84c','#7dc9a0','#c97a7a','#a0c0e0']
-
-  const navItems = [
+  const navItems=[
     {id:'dashboard',label:'Inicio',icon:I.dash},
     {id:'agenda',label:'Agenda',icon:I.cal},
     {id:'financeiro',label:'Financas',icon:I.fin},
     {id:'clientes',label:'Clientes',icon:I.cli},
+    {id:'servicos',label:'Servicos',icon:I.servicos},
   ]
 
-  app.innerHTML = `
-    <!-- HEADER -->
-    <header class="header">
-      <div class="header-brand">
-        <div class="header-logo">&#9986;</div>
-        <span class="header-title">Studio Glamour</span>
-      </div>
-      <button class="header-btn" onclick="openModal()">${svg(I.plus,14)} Novo</button>
-    </header>
+  const stepsHtml=s.stepModal?`
+    <div class="steps">
+      ${Array(s.totalSteps).fill().map((_,i)=>{
+        const n=i+1;let cls='pending'
+        if(n===s.step)cls='active'
+        else if(n<s.step)cls='done'
+        return `<div class="step ${cls}">${n<s.step?svg(I.check,12):n}</div>${i<s.totalSteps-1?`<div class="step-line${n<=s.step?' done':''}"></div>`:''}`
+      }).join('')}
+    </div>
+  `:''
 
-    <!-- TAB BAR -->
-    <nav class="tabbar">
-      ${navItems.map(n => `
-        <button onclick="setTab('${n.id}')" class="${s.tab === n.id ? 'active' : ''}">
-          ${n.icon}
-          ${n.label}
-        </button>
-      `).join('')}
-    </nav>
+  app.innerHTML=`
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">&#9986;</div>
+    <span class="header-title">Studio Glamour</span>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" onclick="toggleDark()" title="Modo escuro">${svg(s.darkMode?I.sun:I.moon,18)}</button>
+    <button class="header-btn" onclick="startBooking()">${svg(I.plus,12)} Novo</button>
+  </div>
+</header>
 
-    <!-- MAIN -->
-    <main class="main">
-      <div class="page-title">
-        ${s.tab === 'dashboard' ? 'Visao Geral' :
-          s.tab === 'agenda' ? 'Agenda' :
-          s.tab === 'financeiro' ? 'Financeiro' : 'Clientes'}
-      </div>
+<nav class="tabbar">
+  ${navItems.map(n=>`<button onclick="setTab('${n.id}')" class="${s.tab===n.id?'active':''}">${n.icon}${n.label}</button>`).join('')}
+</nav>
 
-      ${s.tab === 'dashboard' ? renderDashboard(entradas, saidas, lucro, todayAppts) :
-        s.tab === 'agenda' ? renderAgenda(s, firstDay, daysInMonth, apptDates, todayAppts) :
-        s.tab === 'financeiro' ? renderFinanceiro(entradas, saidas, lucro, filteredTrans, s.filterFin) :
-        renderClientes(s.clientSearch, filteredClients, s.appointments, avatarColors)}
+<main class="main">
+  ${s.subtab==='clientDetail'?renderClientDetail(s,colors):
+    s.tab==='dashboard'?renderDashboard(entradas,saidas,lucro,todayAppts,s):
+    s.tab==='agenda'?renderAgenda(s,firstDay,daysInMonth,apptDates,todayAppts):
+    s.tab==='financeiro'?renderFinance(entradas,saidas,lucro,filteredTrans,s.filterFin):
+    s.tab==='clientes'?renderClients(s.clientSearch,filteredClients,s.appointments,colors,s):
+    s.tab==='servicos'?renderServicos(s):
+    ''}
+</main>
 
-    </main>
+${s.toast?`<div class="toast">${s.toast}</div>`:''}
+${s.showModal?renderApptModal(s,stepsHtml):''}
+${s.showTransModal?renderTransModal(s):''}
+${s.showServicesModal?renderServicesModal(s):''}
+${s.showProModal?renderProModal(s):''}
+${s.stepModal?s.loading?`<div class="modal-overlay"><div class="modal-content"><div class="text-center" style="padding:30px"><div class="spinner"></div><div style="margin-top:10px;color:var(--text);font-size:13px">Salvando...</div></div></div></div>`:'':''}
+`}
 
-    <!-- TOAST -->
-    ${s.toast ? `<div class="toast">${s.toast}</div>` : ''}
+function dark(){return state.darkMode}
+function toggleDark(){state.darkMode=!state.darkMode;save();render()}
 
-    <!-- MODALS -->
-    ${s.showModal ? renderApptModal(s) : ''}
-    ${s.showTransModal ? renderTransModal(s) : ''}
-  `
-}
-
-function renderDashboard(entradas, saidas, lucro, todayAppts) {
-  const ticket = Math.round(entradas / (state.transactions.filter(t=>t.type==='entrada').length || 1))
-  const margem = entradas ? Math.round(lucro/entradas*100) : 0
-
-  return `
+function renderDashboard(entradas,saidas,lucro,todayAppts,s){
+  const ticket=Math.round(entradas/(s.transactions.filter(t=>t.type==='entrada').length||1))
+  const margem=entradas?Math.round(lucro/entradas*100):0
+  return`
     <div class="kpis">
-      <div class="kpi-card" style="border-color:var(--gold)">
-        <div class="kpi-label">Receita do mes</div>
-        <div class="kpi-value">R$ ${entradas.toLocaleString('pt-BR')}</div>
-      </div>
-      <div class="kpi-card" style="border-color:var(--pink)">
-        <div class="kpi-label">Agendamentos</div>
-        <div class="kpi-value">${state.appointments.length}</div>
-      </div>
-      <div class="kpi-card" style="border-color:var(--green)">
-        <div class="kpi-label">Ticket medio</div>
-        <div class="kpi-value">R$ ${ticket}</div>
-      </div>
-      <div class="kpi-card" style="border-color:var(--red)">
-        <div class="kpi-label">Despesas</div>
-        <div class="kpi-value">R$ ${saidas.toLocaleString('pt-BR')}</div>
-      </div>
+      <div class="kpi-card" style="border-color:var(--gold)"><div class="kpi-label">Receita mes</div><div class="kpi-value">R$ ${entradas.toLocaleString('pt-BR')}</div></div>
+      <div class="kpi-card" style="border-color:var(--pink)"><div class="kpi-label">Agendamentos</div><div class="kpi-value">${s.appointments.length}</div></div>
+      <div class="kpi-card" style="border-color:var(--green)"><div class="kpi-label">Ticket medio</div><div class="kpi-value">R$ ${ticket}</div></div>
+      <div class="kpi-card" style="border-color:var(--red)"><div class="kpi-label">Despesas</div><div class="kpi-value">R$ ${saidas.toLocaleString('pt-BR')}</div></div>
     </div>
-
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div class="card-title" style="margin:0">Hoje — ${todayAppts.length} agendamentos</div>
-      </div>
-      ${todayAppts.length === 0 ? `
-        <div class="empty-state"><div class="icon">&#9986;</div><div class="msg">Nenhum agendamento hoje</div></div>
-      ` : todayAppts.map(a => `
-        <div class="appt-item">
-          <div class="appt-time"><div class="t">${a.time}</div></div>
-          <div class="appt-info">
-            <div class="name">${a.client}</div>
-            <div class="service">${a.service}</div>
+      <div class="card-title" style="margin-bottom:10px">Hoje — ${todayAppts.length} agendamento${todayAppts.length!==1?'s':''}</div>
+      ${todayAppts.length===0?`<div class="empty-state"><div class="icon">&#9986;</div><div class="msg">Nenhum agendamento hoje</div></div>`:
+        todayAppts.map(a=>`
+          <div class="appt-item">
+            <div class="appt-time"><div class="t">${a.time}</div></div>
+            <div class="appt-info"><div class="name">${a.client}</div><div class="service">${a.service}${a.prof?' • '+a.prof:''}</div></div>
+            <select class="appt-status" style="background:${STATUS[a.status]}33;color:${STATUS[a.status]}" onchange="updateStatus(${a.id},this.value)">
+              <option value="pendente" ${a.status==='pendente'?'selected':''}>Pendente</option>
+              <option value="confirmado" ${a.status==='confirmado'?'selected':''}>Confirmado</option>
+              <option value="concluido" ${a.status==='concluido'?'selected':''}>Concluido</option>
+              <option value="cancelado" ${a.status==='cancelado'?'selected':''}>Cancelado</option>
+            </select>
           </div>
-          <select class="appt-status" style="background:${STATUS[a.status]}33;color:${STATUS[a.status]}" onchange="updateStatus(${a.id},this.value)">
-            <option value="pendente" ${a.status==='pendente'?'selected':''}>Pendente</option>
-            <option value="confirmado" ${a.status==='confirmado'?'selected':''}>Confirmado</option>
-            <option value="concluido" ${a.status==='concluido'?'selected':''}>Concluido</option>
-            <option value="cancelado" ${a.status==='cancelado'?'selected':''}>Cancelado</option>
-          </select>
-        </div>
-      `).join('')}
+        `).join('')}
     </div>
-
     <div class="card">
       <div class="card-title">Resumo Financeiro</div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px">
-        <span style="color:var(--text)">Entradas</span>
-        <span style="font-weight:700;color:var(--green)">R$ ${entradas.toLocaleString('pt-BR')}</span>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12px"><span style="color:var(--text)">Entradas</span><span style="font-weight:700;color:var(--green)">R$ ${entradas.toLocaleString('pt-BR')}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12px"><span style="color:var(--text)">Saidas</span><span style="font-weight:700;color:var(--red)">R$ ${saidas.toLocaleString('pt-BR')}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12px"><span style="color:var(--text)">Lucro</span><span style="font-weight:700;color:var(--gold)">R$ ${lucro.toLocaleString('pt-BR')}</span></div>
+      <div style="background:var(--rose2);border-radius:6px;padding:8px;margin-top:6px">
+        <div style="font-size:9px;color:var(--text);margin-bottom:3px">Margem: ${margem}%</div>
+        <div style="height:4px;background:var(--card-border);border-radius:4px;overflow:hidden"><div style="height:100%;width:${Math.min(margem,100)}%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:4px"></div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px">
-        <span style="color:var(--text)">Saidas</span>
-        <span style="font-weight:700;color:var(--red)">R$ ${saidas.toLocaleString('pt-BR')}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px">
-        <span style="color:var(--text)">Lucro</span>
-        <span style="font-weight:700;color:var(--gold)">R$ ${lucro.toLocaleString('pt-BR')}</span>
-      </div>
-      <div style="background:var(--rose2);border-radius:8px;padding:10px;margin-top:8px">
-        <div style="font-size:10px;color:var(--text);margin-bottom:4px">Margem de lucro: ${margem}%</div>
-        <div style="height:6px;background:#e8dcd4;border-radius:8px;overflow:hidden">
-          <div style="height:100%;width:${margem}%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:8px"></div>
-        </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Atalhos</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button class="btn-gold" onclick="startBooking()" style="padding:10px;font-size:11px;text-align:center">${svg(I.plus,12)} Agendar</button>
+        <button class="btn-gold" onclick="setTab('financeiro')" style="padding:10px;font-size:11px;text-align:center">${svg(I.fin,12)} Financas</button>
+        <button class="btn-gold" onclick="setTab('clientes')" style="padding:10px;font-size:11px;text-align:center">${svg(I.cli,12)} Clientes</button>
+        <button class="btn-gold" onclick="setTab('servicos')" style="padding:10px;font-size:11px;text-align:center">${svg(I.settings,12)} Configurar</button>
       </div>
     </div>
   `
 }
 
-function renderAgenda(s, firstDay, daysInMonth, apptDates, todayAppts) {
-  return `
+function renderAgenda(s,firstDay,daysInMonth,apptDates,todayAppts){
+  return`
     <div class="card">
       <div class="cal-header">
-        <button onclick="prevMonth()">${svg(I.left,16)}</button>
+        <button onclick="prevMonth()">${svg(I.left,14)}</button>
         <span>${MONTHS[s.calMonth]} ${s.calYear}</span>
-        <button onclick="nextMonth()">${svg(I.right,16)}</button>
+        <button onclick="nextMonth()">${svg(I.right,14)}</button>
       </div>
       <div class="cal-grid">
-        ${DAYS.map(d => `<div class="cal-day-header">${d}</div>`).join('')}
-        ${Array(firstDay).fill().map((_,i) => `<div></div>`).join('')}
-        ${Array(daysInMonth).fill().map((_,i) => {
-          const day = i + 1
-          const ds = `${s.calYear}-${String(s.calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`
-          const sel = ds === s.selectedDate
-          const has = apptDates.has(ds)
-          return `<button class="cal-day${sel?' selected':''}" onclick="selectDate('${ds}')">${day}${has && !sel ? '<span class="dot"></span>':''}</button>`
+        ${DAYS.map(d=>`<div class="cal-day-header">${d}</div>`).join('')}
+        ${Array(firstDay).fill().map((_,i)=>`<div></div>`).join('')}
+        ${Array(daysInMonth).fill().map((_,i)=>{
+          const day=i+1,ds=s.calYear+'-'+String(s.calMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0')
+          const sel=ds===s.selectedDate,has=apptDates.has(ds)
+          return `<button class="cal-day${sel?' selected':''}" onclick="selectDate('${ds}')">${day}${has&&!sel?'<span class="dot"></span>':''}</button>`
         }).join('')}
       </div>
     </div>
-
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div class="card-title" style="margin:0">
-          ${s.selectedDate === today() ? 'Hoje' : s.selectedDate.split('-').reverse().join('/')} — ${todayAppts.length}
-        </div>
-      </div>
-      ${todayAppts.length === 0 ? `
-        <div class="empty-state"><div class="icon">&#9986;</div><div class="msg">Nenhum agendamento</div></div>
-      ` : todayAppts.map(a => `
-        <div class="appt-item">
-          <div class="appt-time"><div class="t">${a.time}</div></div>
-          <div class="appt-info">
-            <div class="name">${a.client}</div>
-            <div class="service">${a.service} - R$ ${a.value}</div>
+      <div class="card-title" style="margin-bottom:10px">${s.selectedDate===today()?'Hoje':s.selectedDate.split('-').reverse().join('/')} — ${todayAppts.length}</div>
+      ${todayAppts.length===0?`<div class="empty-state"><div class="icon">&#128197;</div><div class="msg">Nenhum agendamento</div></div>`:
+        todayAppts.map(a=>`
+          <div class="appt-item">
+            <div class="appt-time"><div class="t">${a.time}</div></div>
+            <div class="appt-info"><div class="name">${a.client}</div><div class="service">${a.service}${a.prof?' • '+a.prof:''} — R$ ${a.value}</div></div>
+            <div style="display:flex;gap:3px;flex-shrink:0">
+              <button onclick="editAppt(${a.id})" style="background:none;border:none;cursor:pointer;color:var(--text);padding:3px">${svg(I.edit,12)}</button>
+              <button onclick="deleteAppt(${a.id})" style="background:none;border:none;cursor:pointer;color:var(--red);padding:3px">${svg(I.trash,12)}</button>
+            </div>
           </div>
-          <div style="display:flex;gap:4px">
-            <button onclick="editAppt(${a.id})" style="background:none;border:none;cursor:pointer;color:var(--text);padding:4px">${svg(I.edit,14)}</button>
-            <button onclick="deleteAppt(${a.id})" style="background:none;border:none;cursor:pointer;color:var(--red);padding:4px">${svg(I.trash,14)}</button>
-          </div>
-        </div>
-      `).join('')}
+        `).join('')}
     </div>
   `
 }
 
-function renderFinanceiro(entradas, saidas, lucro, filteredTrans, filterFin) {
-  return `
+function renderFinance(entradas,saidas,lucro,filteredTrans,filterFin){
+  return`
     <div class="fin-summary">
-      <div class="fin-card">
-        <div class="fin-label">Entradas</div>
-        <div class="fin-value fin-green">R$ ${entradas.toLocaleString('pt-BR')}</div>
-      </div>
-      <div class="fin-card">
-        <div class="fin-label">Saidas</div>
-        <div class="fin-value fin-red">R$ ${saidas.toLocaleString('pt-BR')}</div>
-      </div>
-      <div class="fin-card">
-        <div class="fin-label">Lucro</div>
-        <div class="fin-value fin-gold">R$ ${lucro.toLocaleString('pt-BR')}</div>
-      </div>
+      <div class="fin-card"><div class="fin-label">Entradas</div><div class="fin-value fin-green">R$ ${entradas.toLocaleString('pt-BR')}</div></div>
+      <div class="fin-card"><div class="fin-label">Saidas</div><div class="fin-value fin-red">R$ ${saidas.toLocaleString('pt-BR')}</div></div>
+      <div class="fin-card"><div class="fin-label">Lucro</div><div class="fin-value fin-gold">R$ ${lucro.toLocaleString('pt-BR')}</div></div>
     </div>
-
-    <button class="btn-primary" onclick="openTransModal()">${svg(I.plus,14)} Novo Lancamento</button>
-
+    <button class="btn-primary" onclick="openTransModal()">${svg(I.plus,13)} Novo Lancamento</button>
     <div class="card">
       <div class="filter-bar">
         <button class="filter-btn${filterFin==='todos'?' active':''}" onclick="setFilter('todos')">Todos</button>
         <button class="filter-btn${filterFin==='entrada'?' active':''}" onclick="setFilter('entrada')">Entradas</button>
         <button class="filter-btn${filterFin==='saida'?' active':''}" onclick="setFilter('saida')">Saidas</button>
       </div>
-      ${filteredTrans.length === 0 ? `
-        <div class="empty-state"><div class="icon">&#128176;</div><div class="msg">Nenhum lancamento</div></div>
-      ` : filteredTrans.map(t => `
-        <div class="trans-item">
-          <div>
-            <div class="trans-desc">${t.desc}</div>
-            <div class="trans-meta">${t.date.split('-').reverse().join('/')} • ${t.cat}</div>
+      ${filteredTrans.length===0?`<div class="empty-state"><div class="icon">&#128176;</div><div class="msg">Nenhum lancamento</div></div>`:
+        filteredTrans.map(t=>`
+          <div class="trans-item">
+            <div><div class="trans-desc">${t.desc}</div><div class="trans-meta">${t.date.split('-').reverse().join('/')} • ${t.cat}</div></div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="trans-value" style="color:${t.type==='entrada'?'var(--green)':'var(--red)'}">${t.type==='entrada'?'+':'-'} R$ ${t.value.toLocaleString('pt-BR')}</span>
+              <button onclick="deleteTrans(${t.id})" style="background:none;border:none;cursor:pointer;color:var(--red);padding:2px">${svg(I.trash,11)}</button>
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="trans-value" style="color:${t.type==='entrada'?'var(--green)':'var(--red)'}">
-              ${t.type==='entrada'?'+':'-'} R$ ${t.value.toLocaleString('pt-BR')}
-            </span>
-            <button onclick="deleteTrans(${t.id})" style="background:none;border:none;cursor:pointer;color:var(--red)">${svg(I.trash,12)}</button>
-          </div>
-        </div>
-      `).join('')}
+        `).join('')}
     </div>
   `
 }
 
-function renderClientes(search, clients, appts, colors) {
-  return `
+function renderClients(search,clients,appts,colors,s){
+  return`
     <div class="card">
       <div class="search-box">
-        <span class="search-icon">${svg(I.search,14)}</span>
+        <span class="search-icon">${svg(I.search,12)}</span>
         <input placeholder="Buscar cliente..." value="${search}" oninput="searchClient(this.value)">
       </div>
     </div>
-
-    ${clients.length === 0 ? `
-      <div style="background:#fff;border-radius:12px;padding:30px;text-align:center;color:#c0a090">
-        <div style="font-size:30px;margin-bottom:8px">&#128101;</div>
-        <div style="font-size:13px">Nenhum cliente encontrado</div>
-      </div>
-    ` : `
-    <div class="client-grid">
-      ${clients.map((c,i) => {
-        const appts = state.appointments.filter(a => a.client === c)
-        const total = appts.reduce((s,a) => s + a.value, 0)
-        return `
-          <div class="client-card">
-            <div class="client-avatar" style="background:${colors[i%5]}44;border:1px solid ${colors[i%5]}66">
-              ${c.charAt(0)}
-            </div>
-            <div class="client-name">${c}</div>
-            <div class="client-stats">
-              <span>${appts.length} visita${appts.length!==1?'s':''}</span>
-              <span>R$ ${total}</span>
-            </div>
-          </div>
-        `
-      }).join('')}
-    </div>
-    `}
+    ${clients.length===0?`<div class="card"><div class="empty-state"><div class="icon">&#128101;</div><div class="msg">Nenhum cliente encontrado</div></div></div>`:
+      `<div class="client-grid">${clients.map((c,i)=>{
+        const apps=state.appointments.filter(a=>a.client===c),total=apps.reduce((x,a)=>x+a.value,0)
+        return `<div class="client-card" onclick="viewClient('${c}')">
+          <div class="client-avatar" style="background:${colors[i%colors.length]}44;border:1px solid ${colors[i%colors.length]}66">${c.charAt(0)}</div>
+          <div class="client-name">${c}</div>
+          <div class="client-stats"><span>${apps.length} visita${apps.length!==1?'s':''}</span><span>R$ ${total}</span></div>
+        </div>`
+      }).join('')}</div>`}
   `
 }
 
-function renderApptModal(s) {
-  const isEdit = s.editingAppt
-  return `
+function renderClientDetail(s,colors){
+  const client=s.clientDetail
+  if(!client)return''
+  const apps=s.appointments.filter(a=>a.client===client).sort((a,b)=>b.date.localeCompare(a.date))
+  const total=apps.reduce((x,a)=>x+a.value,0)
+  const idx=[...new Set(s.appointments.map(a=>a.client))].indexOf(client)
+  const c=colors[Math.max(0,idx)%colors.length]
+  return`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <button onclick="goBack()" style="background:none;border:none;cursor:pointer;color:var(--text);padding:4px">${svg(I.back,18)}</button>
+      <div class="client-avatar" style="width:40px;height:40px;font-size:18px;background:${c}44;border:1px solid ${c}66;border-radius:50%;display:flex;align-items:center;justify-content:center">${client.charAt(0)}</div>
+      <div><div style="font-size:16px;font-weight:700;color:var(--text-primary)">${client}</div><div style="font-size:11px;color:var(--text)">${apps.length} visita${apps.length!==1?'s':''} • Total: R$ ${total}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Historico de Servicos</div>
+      ${apps.length===0?`<div class="empty-state"><div class="msg">Nenhum servico</div></div>`:
+        apps.map(a=>`
+          <div class="appt-item">
+            <div class="appt-time"><div class="t">${a.date.slice(8)}</div><div style="font-size:8px;color:var(--text)">${MONTHS[parseInt(a.date.slice(5,7))-1].slice(0,3)}</div></div>
+            <div class="appt-info"><div class="name">${a.service}${a.prof?' • '+a.prof:''}</div><div class="service">${a.time} • R$ ${a.value}</div></div>
+            <span class="appt-status" style="background:${STATUS[a.status]}33;color:${STATUS[a.status]}">${a.status}</span>
+          </div>
+        `).join('')}
+    </div>
+  `
+}
+
+function renderServicos(s){
+  return`
+    <div class="card">
+      <div class="card-title">Servicos</div>
+      <div style="margin-bottom:10px">
+        ${s.services.map(sv=>`
+          <span class="service-chip${s.formAppt.service===sv.name?' active':''}">
+            ${sv.name} (R$ ${sv.price})
+            <span class="del" onclick="deleteService(${sv.id})">×</span>
+          </span>
+        `).join('')}
+      </div>
+      <button class="btn-primary" onclick="openServiceModal()" style="margin-bottom:0;padding:10px;font-size:12px">${svg(I.plus,12)} Novo Servico</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Profissionais</div>
+      ${s.pros.map(p=>`
+        <div class="appt-item">
+          <div class="appt-info"><div class="name">${p.name}</div></div>
+          <div style="display:flex;gap:6px">
+            <button onclick="editPro(${p.id})" style="background:none;border:none;cursor:pointer;color:var(--text);padding:3px">${svg(I.edit,12)}</button>
+            <button onclick="deletePro(${p.id})" style="background:none;border:none;cursor:pointer;color:var(--red);padding:3px">${svg(I.trash,12)}</button>
+          </div>
+        </div>
+      `).join('')}
+      <button class="btn-primary" onclick="openProModal()" style="margin-bottom:0;padding:10px;font-size:12px;margin-top:8px">${svg(I.plus,12)} Novo Profissional</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Configuracoes</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
+        <span style="font-size:12px;color:var(--text-primary)">Modo escuro</span>
+        <button class="toggle${s.darkMode?' on':''}" onclick="toggleDark()"><span class="knob"></span></button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
+        <span style="font-size:12px;color:var(--text-primary)">Notificacoes <span class="badge badge-green">Novo</span></span>
+        <button class="toggle${s.notifEnabled?' on':''}" onclick="toggleNotif()"><span class="knob"></span></button>
+      </div>
+      ${s.notifEnabled?`<div style="font-size:10px;color:var(--text);padding:4px 0">Lembretes ativados para agendamentos</div>`:''}
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--card-border)">
+        <button onclick="clearData()" style="background:none;border:1px solid var(--red);color:var(--red);border-radius:8px;padding:8px 16px;font-size:11px;cursor:pointer;width:100%;font-weight:600">Limpar todos os dados</button>
+      </div>
+    </div>
+  `
+}
+
+function renderApptModal(s,stepsHtml){
+  const isEdit=s.editingAppt
+  const title=isEdit?'Editar Agendamento':s.stepModal?`Passo ${s.step} de ${s.totalSteps}`:'Novo Agendamento'
+  const svcs=s.services
+  const pros=s.pros
+
+  let body=''
+  if(isEdit||!s.stepModal){
+    body=`
+      <div class="form-group"><label>Cliente</label><input placeholder="Nome" value="${s.formAppt.client}" oninput="formAppt('client',this.value)"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Data</label><input type="date" value="${s.formAppt.date}" oninput="formAppt('date',this.value)"></div>
+        <div class="form-group"><label>Horario</label><input type="time" value="${s.formAppt.time}" oninput="formAppt('time',this.value)"></div>
+      </div>
+      <div class="form-group"><label>Servico</label><select onchange="formAppt('service',this.value)">${svcs.map(sv=>`<option value="${sv.name}" ${s.formAppt.service===sv.name?'selected':''}>${sv.name} — R$ ${sv.price}</option>`).join('')}</select></div>
+      ${pros.length?`<div class="form-group"><label>Profissional</label><select onchange="formAppt('prof',this.value)"><option value="">Qualquer</option>${pros.map(p=>`<option value="${p.name}" ${s.formAppt.prof===p.name?'selected':''}>${p.name}</option>`).join('')}</select></div>`:''}
+      <div class="form-group"><label>Valor (R$)</label><input type="number" placeholder="0" value="${s.formAppt.value}" oninput="formAppt('value',this.value)"></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn-gold" onclick="${isEdit?'saveEditAppt()':'saveApptDirect()'}">${isEdit?'Salvar':'Agendar'}</button>
+      </div>`
+  }else{
+    if(s.step===1) body=step1(svcs)
+    else if(s.step===2) body=step2(pros)
+    else if(s.step===3) body=step3(s)
+    else if(s.step===4) body=step4(s)
+  }
+
+  return`
     <div class="modal-overlay" onclick="closeModal(event)">
-      <div class="modal-content" onclick="e=>e.stopPropagation()">
-        <div class="modal-header">
-          <h3>${isEdit ? 'Editar' : 'Novo'} Agendamento</h3>
-          <button class="modal-close" onclick="closeModal()">${svg(I.x,18)}</button>
-        </div>
-        <div class="form-group">
-          <label>Cliente</label>
-          <input placeholder="Nome da cliente" value="${s.formAppt.client}" oninput="formAppt('client',this.value)">
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Data</label>
-            <input type="date" value="${s.formAppt.date}" oninput="formAppt('date',this.value)">
-          </div>
-          <div class="form-group">
-            <label>Horario</label>
-            <input type="time" value="${s.formAppt.time}" oninput="formAppt('time',this.value)">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Servico</label>
-          <select onchange="formAppt('service',this.value)">
-            ${SERVICES.map(sv => `<option value="${sv}" ${s.formAppt.service===sv?'selected':''}>${sv}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Valor (R$)</label>
-          <input type="number" placeholder="0" value="${s.formAppt.value}" oninput="formAppt('value',this.value)">
-        </div>
-        <div style="display:flex;gap:10px">
-          <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
-          <button class="btn-gold" onclick="${isEdit ? 'saveEditAppt()' : 'saveAppt()'}">${isEdit ? 'Salvar' : 'Agendar'}</button>
-        </div>
-      </div>
-    </div>
-  `
-}
-
-function renderTransModal(s) {
-  return `
-    <div class="modal-overlay" onclick="closeTransModal(event)">
       <div class="modal-content">
         <div class="modal-header">
-          <h3>Novo Lancamento</h3>
-          <button class="modal-close" onclick="closeTransModal()">${svg(I.x,18)}</button>
+          <h3>${title}</h3>
+          <button class="modal-close" onclick="closeModal()">${svg(I.x,16)}</button>
         </div>
-        <div class="type-toggle">
-          <div class="type-btn${s.formTrans.type==='entrada'?' active':''}" onclick="formTrans('type','entrada')">Entrada</div>
-          <div class="type-btn red${s.formTrans.type==='saida'?' active':''}" onclick="formTrans('type','saida')">Saida</div>
-        </div>
-        <div class="form-group">
-          <label>Descricao</label>
-          <input placeholder="Ex: Corte - Maria" value="${s.formTrans.desc}" oninput="formTrans('desc',this.value)">
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Valor (R$)</label>
-            <input type="number" placeholder="0" value="${s.formTrans.value}" oninput="formTrans('value',this.value)">
-          </div>
-          <div class="form-group">
-            <label>Data</label>
-            <input type="date" value="${s.formTrans.date}" oninput="formTrans('date',this.value)">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Categoria</label>
-          <select onchange="formTrans('cat',this.value)">
-            <option value="Servico" ${s.formTrans.cat==='Servico'?'selected':''}>Servico</option>
-            <option value="Material" ${s.formTrans.cat==='Material'?'selected':''}>Material</option>
-            <option value="Fixo" ${s.formTrans.cat==='Fixo'?'selected':''}>Fixo</option>
-            <option value="Outros" ${s.formTrans.cat==='Outros'?'selected':''}>Outros</option>
-          </select>
-        </div>
-        <div style="display:flex;gap:10px">
-          <button class="btn-secondary" onclick="closeTransModal()">Cancelar</button>
-          <button class="btn-gold" onclick="saveTrans()">Salvar</button>
-        </div>
+        ${stepsHtml}
+        ${body}
       </div>
+    </div>`
+}
+
+function step1(svcs){
+  return`
+    <div class="form-group"><label>Escolha o servico</label></div>
+    ${svcs.map(sv=>`
+      <div onclick="stepSelectService(${sv.id})" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;border:1px solid var(--card-border);margin-bottom:6px;cursor:pointer;background:var(--card);transition:all .2s">
+        <span style="font-size:13px;color:var(--text-primary)">${sv.name}</span>
+        <span style="font-weight:700;color:var(--gold);font-size:13px">R$ ${sv.price}</span>
+      </div>
+    `).join('')}
+  `
+}
+
+function step2(pros){
+  if(!pros.length) return step3(state)
+  return`
+    <div class="form-group"><label>Escolha o profissional</label></div>
+    <div onclick="stepSelectPro('')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--card-border);margin-bottom:6px;cursor:pointer;background:var(--card)">
+      <span style="font-size:13px;color:var(--text-primary)">Qualquer profissional</span>
+    </div>
+    ${pros.map(p=>`
+      <div onclick="stepSelectPro('${p.name}')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--card-border);margin-bottom:6px;cursor:pointer;background:var(--card)">
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--dark)">${p.name.charAt(0)}</div>
+        <span style="font-size:13px;color:var(--text-primary)">${p.name}</span>
+      </div>
+    `).join('')}
+  `
+}
+
+function step3(s){
+  return`
+    <div class="form-group"><label>Data e horario</label></div>
+    <div class="form-row">
+      <div class="form-group"><input type="date" value="${s.formAppt.date}" oninput="formAppt('date',this.value)"></div>
+      <div class="form-group"><input type="time" value="${s.formAppt.time}" oninput="formAppt('time',this.value)"></div>
+    </div>
+    <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:4px">
+      ${['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00'].map(t=>
+        `<span class="service-chip${s.formAppt.time===t?' active':''}" onclick="formAppt('time','${t}')">${t}</span>`
+      ).join('')}
     </div>
   `
 }
 
-/* ACTIONS */
-function setTab(tab) { state.tab = tab; render() }
+function step4(s){
+  const svc=s.services.find(x=>x.name===s.formAppt.service)
+  return`
+    <div style="text-align:center;padding:10px 0">
+      <div style="font-size:40px;margin-bottom:8px">&#9986;</div>
+      <div style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:4px">${s.formAppt.client}</div>
+      <div style="font-size:13px;color:var(--text);margin-bottom:2px">${s.formAppt.service}${s.formAppt.prof?' com '+s.formAppt.prof:''}</div>
+      <div style="font-size:13px;color:var(--text);margin-bottom:8px">${s.formAppt.date.split('-').reverse().join('/')} as ${s.formAppt.time}</div>
+      <div style="font-size:20px;font-weight:700;color:var(--gold)">R$ ${s.formAppt.value||(svc?svc.price:'0')}</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn-secondary" onclick="prevStep()">Voltar</button>
+      <button class="btn-gold" onclick="finishBooking()">Confirmar</button>
+    </div>
+  `
+}
 
-function selectDate(d) { state.selectedDate = d; render() }
+function renderTransModal(s){
+  return`
+    <div class="modal-overlay" onclick="closeTransModal(event)">
+      <div class="modal-content">
+        <div class="modal-header"><h3>Novo Lancamento</h3><button class="modal-close" onclick="closeTransModal()">${svg(I.x,16)}</button></div>
+        <div class="type-toggle">
+          <div class="type-btn${s.formTrans.type==='entrada'?' active':''}" onclick="formTrans('type','entrada');render()">Entrada</div>
+          <div class="type-btn red${s.formTrans.type==='saida'?' active':''}" onclick="formTrans('type','saida');render()">Saida</div>
+        </div>
+        <div class="form-group"><label>Descricao</label><input placeholder="Ex: Corte - Maria" value="${s.formTrans.desc}" oninput="formTrans('desc',this.value)"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Valor (R$)</label><input type="number" placeholder="0" value="${s.formTrans.value}" oninput="formTrans('value',this.value)"></div>
+          <div class="form-group"><label>Data</label><input type="date" value="${s.formTrans.date}" oninput="formTrans('date',this.value)"></div>
+        </div>
+        <div class="form-group"><label>Categoria</label><select onchange="formTrans('cat',this.value)">
+          <option value="Servico" ${s.formTrans.cat==='Servico'?'selected':''}>Servico</option>
+          <option value="Material" ${s.formTrans.cat==='Material'?'selected':''}>Material</option>
+          <option value="Fixo" ${s.formTrans.cat==='Fixo'?'selected':''}>Fixo</option>
+          <option value="Outros" ${s.formTrans.cat==='Outros'?'selected':''}>Outros</option>
+        </select></div>
+        <div style="display:flex;gap:8px"><button class="btn-secondary" onclick="closeTransModal()">Cancelar</button><button class="btn-gold" onclick="saveTrans()">Salvar</button></div>
+      </div>
+    </div>`
+}
 
-function prevMonth() {
-  if (state.calMonth === 0) { state.calMonth = 11; state.calYear-- }
-  else state.calMonth--
+function renderServicesModal(s){
+  const isEdit=s.editingService
+  return`
+    <div class="modal-overlay" onclick="closeServiceModal(event)">
+      <div class="modal-content">
+        <div class="modal-header"><h3>${isEdit?'Editar':'Novo'} Servico</h3><button class="modal-close" onclick="closeServiceModal()">${svg(I.x,16)}</button></div>
+        <div class="form-group"><label>Nome</label><input value="${s.formService.name}" oninput="formService('name',this.value)" placeholder="Ex: Corte feminino"></div>
+        <div class="form-group"><label>Preco (R$)</label><input type="number" value="${s.formService.price}" oninput="formService('price',this.value)" placeholder="0"></div>
+        <div style="display:flex;gap:8px"><button class="btn-secondary" onclick="closeServiceModal()">Cancelar</button><button class="btn-gold" onclick="saveService()">${isEdit?'Salvar':'Adicionar'}</button></div>
+      </div>
+    </div>`
+}
+
+function renderProModal(s){
+  const isEdit=s.editingPro
+  return`
+    <div class="modal-overlay" onclick="closeProModal(event)">
+      <div class="modal-content">
+        <div class="modal-header"><h3>${isEdit?'Editar':'Novo'} Profissional</h3><button class="modal-close" onclick="closeProModal()">${svg(I.x,16)}</button></div>
+        <div class="form-group"><label>Nome</label><input value="${s.formPro.name}" oninput="formPro('name',this.value)" placeholder="Nome do profissional"></div>
+        <div style="display:flex;gap:8px"><button class="btn-secondary" onclick="closeProModal()">Cancelar</button><button class="btn-gold" onclick="savePro()">${isEdit?'Salvar':'Adicionar'}</button></div>
+      </div>
+    </div>`
+}
+
+/* === ACTIONS === */
+function setTab(t){state.tab=t;state.subtab=null;state.clientDetail=null;render()}
+function selectDate(d){state.selectedDate=d;render()}
+function prevMonth(){if(state.calMonth===0){state.calMonth=11;state.calYear--}else state.calMonth--;render()}
+function nextMonth(){if(state.calMonth===11){state.calMonth=0;state.calYear++}else state.calMonth++;render()}
+
+/* BOOKING STEP */
+function startBooking(){
+  state.stepModal=true;state.step=1;state.editingAppt=null
+  state.formAppt={client:'',service:state.services[0]?state.services[0].name:'',prof:'',time:'09:00',date:state.selectedDate,value:''}
   render()
 }
-function nextMonth() {
-  if (state.calMonth === 11) { state.calMonth = 0; state.calYear++ }
-  else state.calMonth++
+function stepSelectService(id){
+  const sv=state.services.find(x=>x.id===id)
+  if(!sv)return
+  state.formAppt.service=sv.name;state.formAppt.value=sv.price.toString()
+  state.step=2;render()
+}
+function stepSelectPro(name){
+  state.formAppt.prof=name;state.step=3;render()
+}
+function prevStep(){state.step--;render()}
+function finishBooking(){
+  const f=state.formAppt
+  if(!f.client||!f.service||!f.value)return toast('Preencha todos os campos')
+  state.appointments.push({id:Date.now(),client:f.client,service:f.service,prof:f.prof||'',time:f.time,date:f.date,status:'pendente',value:parseFloat(f.value)})
+  save();state.stepModal=false;toast('Agendamento criado!')
+  if(state.notifEnabled&&'Notification'in window&&Notification.permission==='granted'){
+    const d=new Date(f.date+'T'+f.time);const n=new Notification('Studio Glamour',{body:`${f.client} — ${f.service} as ${f.time}`,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="18" font-size="16">✂️</text></svg>'})
+  }
   render()
 }
-
-function openModal() { state.showModal = true; state.editingAppt = null; state.formAppt = { client:'', service:SERVICES[0], time:'09:00', date:state.selectedDate, value:'' }; render() }
-function closeModal(e) { if (e && e.target !== e.currentTarget) return; state.showModal = false; render() }
-function formAppt(field,val) { state.formAppt[field] = val }
-
-function saveAppt() {
-  const f = state.formAppt
-  if (!f.client || !f.value) return toast('Preencha todos os campos')
-  state.appointments.push({
-    id: Date.now(), client: f.client, service: f.service,
-    time: f.time, date: f.date, status: 'pendente', value: parseFloat(f.value)
-  })
-  save(); state.showModal = false; toast('Agendamento criado!'); render()
+function saveApptDirect(){
+  const f=state.formAppt
+  if(!f.client||!f.value||!f.service)return toast('Preencha todos os campos')
+  state.appointments.push({id:Date.now(),client:f.client,service:f.service,prof:f.prof||'',time:f.time,date:f.date,status:'pendente',value:parseFloat(f.value)})
+  save();state.showModal=false;state.editingAppt=null;toast('Agendamento criado!');render()
 }
 
-function editAppt(id) {
-  const a = state.appointments.find(x => x.id === id)
-  if (!a) return
-  state.editingAppt = a
-  state.formAppt = { client: a.client, service: a.service, time: a.time, date: a.date, value: a.value.toString() }
-  state.showModal = true; render()
+function openModal(){state.showModal=true;state.stepModal=false;state.editingAppt=null;state.formAppt={client:'',service:state.services[0]?state.services[0].name:'',prof:'',time:'09:00',date:state.selectedDate,value:''};render()}
+function closeModal(e){if(e&&e.target!==e.currentTarget)return;state.showModal=false;state.stepModal=false;state.editingAppt=null;render()}
+function formAppt(f,v){state.formAppt[f]=v}
+function editAppt(id){
+  const a=state.appointments.find(x=>x.id===id)
+  if(!a)return
+  state.editingAppt=a;state.stepModal=false;state.showModal=true
+  state.formAppt={client:a.client,service:a.service,prof:a.prof||'',time:a.time,date:a.date,value:a.value.toString()};render()
 }
-
-function saveEditAppt() {
-  const f = state.formAppt; const e = state.editingAppt
-  if (!f.client || !f.value) return toast('Preencha todos os campos')
-  state.appointments = state.appointments.map(a => a.id === e.id ? { ...a, ...f, value: parseFloat(f.value) } : a)
-  save(); state.showModal = false; state.editingAppt = null; toast('Atualizado!'); render()
+function saveEditAppt(){
+  const f=state.formAppt,e=state.editingAppt
+  if(!f.client||!f.value)return toast('Preencha todos os campos')
+  state.appointments=state.appointments.map(a=>a.id===e.id?{...a,...f,value:parseFloat(f.value)}:a)
+  save();state.showModal=false;state.editingAppt=null;toast('Atualizado!');render()
 }
-
-function deleteAppt(id) {
-  if (!confirm('Excluir agendamento?')) return
-  state.appointments = state.appointments.filter(a => a.id !== id)
-  save(); toast('Excluido!'); render()
+function deleteAppt(id){
+  if(!confirm('Excluir agendamento?'))return
+  state.appointments=state.appointments.filter(a=>a.id!==id);save();toast('Excluido!');render()
 }
-
-function updateStatus(id, status) {
-  state.appointments = state.appointments.map(a => a.id === id ? { ...a, status } : a)
-  save(); render()
+function updateStatus(id,st){
+  state.appointments=state.appointments.map(a=>a.id===id?{...a,status:st}:a);save()
+  if(st==='concluido'){
+    const a=state.appointments.find(x=>x.id===id)
+    if(a&&!state.transactions.find(t=>t.desc.includes(a.client)&&t.desc.includes(a.service)))
+      state.transactions.push({id:Date.now(),desc:`${a.service} — ${a.client}`,type:'entrada',value:a.value,date:a.date,cat:'Servico'})
+    save()
+  }
+  render()
 }
 
 /* FINANCE */
-function setFilter(f) { state.filterFin = f; render() }
-function openTransModal() { state.showTransModal = true; state.formTrans = { desc:'', type:'entrada', value:'', date:today(), cat:'Servico' }; render() }
-function closeTransModal(e) { if (e && e.target !== e.currentTarget) return; state.showTransModal = false; render() }
-function formTrans(field,val) { state.formTrans[field] = val; render() }
-
-function saveTrans() {
-  const f = state.formTrans
-  if (!f.desc || !f.value) return toast('Preencha todos os campos')
-  state.transactions.push({ id: Date.now(), desc: f.desc, type: f.type, value: parseFloat(f.value), date: f.date, cat: f.cat })
-  save(); state.showTransModal = false; toast('Lancamento criado!'); render()
+function setFilter(f){state.filterFin=f;render()}
+function openTransModal(){state.showTransModal=true;state.formTrans={desc:'',type:'entrada',value:'',date:today(),cat:'Servico'};render()}
+function closeTransModal(e){if(e&&e.target!==e.currentTarget)return;state.showTransModal=false;render()}
+function formTrans(f,v){state.formTrans[f]=v;render()}
+function saveTrans(){
+  const f=state.formTrans
+  if(!f.desc||!f.value)return toast('Preencha todos os campos')
+  state.transactions.push({id:Date.now(),desc:f.desc,type:f.type,value:parseFloat(f.value),date:f.date,cat:f.cat})
+  save();state.showTransModal=false;toast('Lancamento criado!');render()
 }
-
-function deleteTrans(id) {
-  if (!confirm('Excluir lancamento?')) return
-  state.transactions = state.transactions.filter(t => t.id !== id)
-  save(); toast('Excluido!'); render()
+function deleteTrans(id){
+  if(!confirm('Excluir lancamento?'))return
+  state.transactions=state.transactions.filter(t=>t.id!==id);save();toast('Excluido!');render()
 }
 
 /* CLIENTS */
-function searchClient(val) { state.clientSearch = val; render() }
+function searchClient(v){state.clientSearch=v;render()}
+function viewClient(name){state.clientDetail=name;state.subtab='clientDetail';render()}
+function goBack(){state.subtab=null;state.clientDetail=null;render()}
+
+/* SERVICES */
+function openServiceModal(service){
+  state.showServicesModal=true
+  state.editingService=service||null
+  state.formService=service?{name:service.name,price:service.price.toString()}:{name:'',price:''}
+  render()
+}
+function closeServiceModal(e){if(e&&e.target!==e.currentTarget)return;state.showServicesModal=false;state.editingService=null;render()}
+function formService(f,v){state.formService[f]=v}
+function saveService(){
+  const f=state.formService
+  if(!f.name||!f.price)return toast('Preencha todos os campos')
+  if(state.editingService){
+    state.services=state.services.map(s=>s.id===state.editingService.id?{...s,name:f.name,price:parseFloat(f.price)}:s)
+  }else{
+    state.services.push({id:Date.now(),name:f.name,price:parseFloat(f.price)})
+  }
+  save();state.showServicesModal=false;state.editingService=null;toast('Servico salvo!');render()
+}
+function deleteService(id){
+  if(!confirm('Excluir servico?'))return
+  state.services=state.services.filter(s=>s.id!==id);save();render()
+}
+
+/* PROFESSIONALS */
+function openProModal(pro){
+  state.showProModal=true
+  state.editingPro=pro||null
+  state.formPro=pro?{name:pro.name}:{name:''}
+  render()
+}
+function closeProModal(e){if(e&&e.target!==e.currentTarget)return;state.showProModal=false;state.editingPro=null;render()}
+function formPro(f,v){state.formPro[f]=v}
+function savePro(){
+  const f=state.formPro
+  if(!f.name)return toast('Digite o nome')
+  if(state.editingPro){
+    state.pros=state.pros.map(p=>p.id===state.editingPro.id?{...p,name:f.name}:p)
+  }else{
+    state.pros.push({id:Date.now(),name:f.name})
+  }
+  save();state.showProModal=false;state.editingPro=null;toast('Profissional salvo!');render()
+}
+function deletePro(id){
+  if(!confirm('Excluir profissional?'))return
+  state.pros=state.pros.filter(p=>p.id!==id);save();render()
+}
+
+/* NOTIFICATIONS */
+function toggleNotif(){
+  if(state.notifEnabled){
+    state.notifEnabled=false;save();render();return
+  }
+  if(!('Notification'in window)){toast('Notificacoes nao suportadas');return}
+  if(Notification.permission==='granted'){state.notifEnabled=true;save();render();toast('Notificacoes ativadas!');return}
+  if(Notification.permission==='denied'){toast('Notificacoes bloqueadas no navegador');return}
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){state.notifEnabled=true;save();render();toast('Notificacoes ativadas!')}
+    else toast('Permissao negada')
+  })
+}
+
+/* DATA */
+function clearData(){
+  if(!confirm('Tem certeza? Todos os dados serao perdidos!'))return
+  const d=[...state.services],p=[...state.pros]
+  state.appointments=[];state.transactions=[]
+  localStorage.removeItem('appts');localStorage.removeItem('trans');save();toast('Dados limpos!');render()
+}
 
 /* TOAST */
-function toast(msg) {
-  state.toast = msg; render()
-  setTimeout(() => { state.toast = null; render() }, 2000)
+function toast(msg){state.toast=msg;render();setTimeout(()=>{state.toast=null;render()},2000)}
+
+/* SW */
+if('serviceWorker'in navigator){
+  const swCode='self.addEventListener("install",e=>{self.skipWaiting()});self.addEventListener("fetch",e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))})'
+  const blob=new Blob([swCode],{type:'application/javascript'})
+  const url=URL.createObjectURL(blob)
+  navigator.serviceWorker.register(url).catch(()=>{})
 }
+
+/* PWA Manifest */
+(function(){
+  const m=document.getElementById('manifest-link')
+  const manifest={
+    name:'Studio Glamour',short_name:'Glamour',start_url:'.',display:'standalone',
+    background_color:'#1a0a14',theme_color:'#1a0a14',
+    icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="%23c9a84c"/><text x="24" y="32" font-size="28" text-anchor="middle" fill="%231a0a14">&#9986;</text></svg>',sizes:'48x48',type:'image/svg+xml'}]
+  }
+  m.href='data:application/json,'+encodeURIComponent(JSON.stringify(manifest))
+})()
 
 render()
 </script>
