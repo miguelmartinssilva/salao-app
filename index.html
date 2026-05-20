@@ -202,6 +202,32 @@ input,select,button,textarea{font-family:inherit;font-size:inherit}
 .sem-item{background:var(--rose2);border-radius:8px;padding:10px;text-align:center}
 .sem-val{font-size:15px;font-weight:700;color:var(--text-primary)}
 .sem-lbl{font-size:9px;color:var(--text);margin-top:2px}
+.agenda-header{display:flex;align-items:center;gap:8px;padding:4px 0 8px}
+.agenda-date{font-size:14px;font-weight:700;color:var(--text-primary)}
+.agenda-hoje{padding:4px 10px;border-radius:12px;border:1px solid var(--gold);background:none;color:var(--gold);font-size:10px;font-weight:700;cursor:pointer;margin-left:auto;white-space:nowrap}
+.agenda-search{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--card-border);background:var(--input-bg);color:var(--text-primary);font-size:12px;outline:none;box-sizing:border-box}
+.agenda-search:focus{border-color:var(--gold)}
+.agenda-views{display:flex;gap:4px;margin:6px 0 10px}
+.agenda-view-btn{padding:5px 14px;border-radius:14px;border:1px solid var(--card-border);background:var(--card);color:var(--text);font-size:10px;font-weight:600;cursor:pointer;transition:all .2s}
+.agenda-view-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
+.agenda-timeline{display:flex;flex-direction:column;gap:2px}
+.agenda-slot{display:flex;gap:8px;min-height:44px}
+.agenda-time{width:36px;flex-shrink:0;text-align:center;font-size:9px;font-weight:700;color:var(--text-primary);padding-top:4px;line-height:1.2}
+.agenda-slot-body{flex:1;display:flex;flex-direction:column;gap:4px;padding-left:8px;border-left:2px solid var(--card-border);position:relative;min-height:44px}
+.agenda-slot.has-appt .agenda-slot-body{border-left-color:var(--gold)}
+.agenda-card{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);cursor:pointer;transition:all .2s}
+.agenda-card.sel,.agenda-card:active{border-color:var(--gold)}
+.agenda-card .ac-indicator{width:3px;height:24px;border-radius:2px;flex-shrink:0}
+.agenda-card .ac-body{flex:1;min-width:0}
+.agenda-card .ac-name{font-size:12px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agenda-card .ac-svc{font-size:9px;color:var(--text);margin-top:1px}
+.agenda-card .ac-price{font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0}
+.agenda-card .ac-status{font-size:8px;padding:2px 6px;border-radius:8px;font-weight:600;flex-shrink:0}
+.agenda-free{padding:10px 8px;font-size:10px;color:var(--text);font-style:italic}
+.agenda-actions{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:10px;margin:8px 0}
+.act-btn{padding:6px 10px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);color:var(--text-primary);font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px}
+.act-btn.act-green{border-color:var(--green);color:var(--green)}
+.act-btn.act-red{border-color:var(--red);color:var(--red)}
 </style>
 </head>
 <body>
@@ -235,15 +261,14 @@ let state = {
   clients:load('clients',[]),
   filterFin:'todos',clientSearch:'',clientFilter:'todos',clientSort:'nome',clientDetail:null,
   toast:null,loading:false,
-  showModal:false,showTransModal:false,showServicesModal:false,showProModal:false,showClientModal:false,
+  showModal:false,showTransModal:false,showClientModal:false,
   stepModal:false,step:1,totalSteps:3,
-  editingAppt:null,editingService:null,editingPro:null,editingClient:null,
+  editingAppt:null,editingClient:null,
   darkMode:load('darkMode',false),
   formAppt:{client:'',service:'',time:'09:00',date:today(),value:''},
   formTrans:{desc:'',type:'entrada',value:'',date:today(),cat:'Servico'},
-  formService:{name:'',price:''},
-  formPro:{name:''},
   formClient:{name:'',phone:'',whatsapp:'',birth:'',notes:'',active:true},
+  agendaView:'hoje',agendaSearch:'',showFreeSlots:true,agendaSelAppt:null,
   notifEnabled:load('notifEnabled',false),
   config:load('config',{salonName:'Martins MegaHair',logo:'&#9986;',phone:'',address:'',openTime:'08:00',closeTime:'18:00',workingDays:[0,1,2,3,4,5,6],whatsapp:''})
 }
@@ -411,38 +436,84 @@ function renderDashboard(entradas,saidas,lucro,todayAppts,s){
 }
 
 function renderAgenda(s,firstDay,daysInMonth,apptDates,todayAppts){
+  const cfg=s.config
+  const [oh,om]=cfg.openTime.split(':').map(Number),[ch,cm]=cfg.closeTime.split(':').map(Number)
+  const startMin=oh*60+om,endMin=ch*60+cm
+  const slots=[]
+  for(let m=startMin;m<endMin;m+=60){
+    const sh=Math.floor(m/60),smin=m%60,eh=Math.floor((m+60)/60),emin=(m+60)%60
+    slots.push({start:String(sh).padStart(2,'0')+':'+String(smin).padStart(2,'0'),end:String(eh).padStart(2,'0')+':'+String(emin).padStart(2,'0')})
+  }
+  const selDate=new Date(s.selectedDate+'T12:00:00')
+  const dayName=DAYS[selDate.getDay()]
+  const dateStr=s.selectedDate===today()?'Hoje':dayName+', '+selDate.getDate()+' '+MONTHS[selDate.getMonth()]
+  const filtered=s.agendaSearch?todayAppts.filter(a=>a.client.toLowerCase().includes(s.agendaSearch.toLowerCase())||a.service.toLowerCase().includes(s.agendaSearch.toLowerCase())):todayAppts
+  const isHoje=s.agendaView==='hoje'
+  const nowStr=today().slice(0,10)==='2026-05-20'?'':today()  // adjust for demo
+
+  /* Week view: collect all days */
+  let weekHtml=''
+  if(!isHoje){
+    const dow=selDate.getDay(),seg=new Date(selDate);seg.setDate(selDate.getDate()-(dow===0?6:dow-1))
+    for(let i=0;i<7;i++){
+      const d=new Date(seg);d.setDate(seg.getDate()+i)
+      const ds=d.toISOString().slice(0,10)
+      const dayAppts=s.appointments.filter(a=>a.date===ds).sort((a,b)=>a.time.localeCompare(b.time))
+      const label=ds===today()?'Hoje':DAYS[d.getDay()]+' '+d.getDate()
+      weekHtml+=`<div style="margin-bottom:8px${i>0?';margin-top:12px':''}"><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:4px">${label}</div>${dayAppts.length?dayAppts.map(a=>`<div class="agenda-card" onclick="selAppt(${a.id})" style="${s.agendaSelAppt===a.id?'border-color:var(--gold)':''}"><div class="ac-time">${a.time}</div><div class="ac-body"><div class="ac-name">${a.client}</div><div class="ac-svc">${a.service}</div></div><div class="ac-price">R$ ${a.value}</div><span class="ac-status" style="background:${STATUS[a.status]}22;color:${STATUS[a.status]}">${a.status}</span></div>`).join(''):`<div style="font-size:11px;color:var(--text);padding:6px 0">Nenhum agendamento</div>`}</div>`
+    }
+  }
+
   return`
-    <div class="card">
-      <div class="cal-header">
-        <button onclick="prevMonth()">${svg(I.left,14)}</button>
-        <span>${MONTHS[s.calMonth]} ${s.calYear}</span>
-        <button onclick="nextMonth()">${svg(I.right,14)}</button>
-      </div>
-      <div class="cal-grid">
-        ${DAYS.map(d=>`<div class="cal-day-header">${d}</div>`).join('')}
-        ${Array(firstDay).fill().map((_,i)=>`<div></div>`).join('')}
-        ${Array(daysInMonth).fill().map((_,i)=>{
-          const day=i+1,ds=s.calYear+'-'+String(s.calMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0')
-          const sel=ds===s.selectedDate,has=apptDates.has(ds)
-          return `<button class="cal-day${sel?' selected':''}" onclick="selectDate('${ds}')">${day}${has&&!sel?'<span class="dot"></span>':''}</button>`
-        }).join('')}
-      </div>
+    <div class="agenda-header">
+      <button onclick="prevDay()">${svg(I.left,14)}</button>
+      <div><div class="agenda-date">${dateStr}</div><div style="font-size:9px;color:var(--text)">${todayAppts.length} agendamento${todayAppts.length!==1?'s':''}</div></div>
+      <button onclick="nextDay()">${svg(I.right,14)}</button>
+      <button class="agenda-hoje" onclick="goToday()">Hoje</button>
     </div>
-    <div class="card">
-      <div class="card-title" style="margin-bottom:10px">${s.selectedDate===today()?'Hoje':s.selectedDate.split('-').reverse().join('/')} — ${todayAppts.length}</div>
-      ${todayAppts.length===0?`<div class="empty-state"><div class="icon">&#128197;</div><div class="msg">Nenhum agendamento</div></div>`:
-        todayAppts.map(a=>`
-          <div class="appt-item">
-            <div class="appt-time"><div class="t">${a.time}</div></div>
-            <div class="appt-info"><div class="name">${a.client}</div><div class="service">${a.service}${a.prof?' • '+a.prof:''} — R$ ${a.value}</div></div>
-            <div style="display:flex;gap:3px;flex-shrink:0">
-              <button onclick="editAppt(${a.id})" style="background:none;border:none;cursor:pointer;color:var(--text);padding:3px">${svg(I.edit,12)}</button>
-              <button onclick="deleteAppt(${a.id})" style="background:none;border:none;cursor:pointer;color:var(--red);padding:3px">${svg(I.trash,12)}</button>
+    <div style="padding:4px 0"><input class="agenda-search" placeholder="Buscar cliente..." value="${s.agendaSearch}" oninput="setAgendaSearch(this.value)"></div>
+    <div class="agenda-views"><button class="agenda-view-btn${isHoje?' active':''}" onclick="setAgendaView('hoje')">Hoje</button><button class="agenda-view-btn${!isHoje?' active':''}" onclick="setAgendaView('semana')">Semana</button></div>
+    ${isHoje?`
+      <div class="agenda-timeline">
+        ${slots.map(sl=>{
+          const apps=filtered.filter(a=>a.time>=sl.start&&a.time<sl.end)
+          if(!apps.length&&!s.showFreeSlots)return''
+          return`<div class="agenda-slot${apps.length?' has-appt':''}">
+            <div class="agenda-time">${sl.start}<br><span style="font-weight:400;font-size:8px;color:var(--text)">${sl.end}</span></div>
+            <div class="agenda-slot-body">
+              ${apps.length?apps.map(a=>`
+                <div class="agenda-card${s.agendaSelAppt===a.id?' sel':''}" onclick="selAppt(${a.id})">
+                  <div class="ac-indicator" style="background:${STATUS[a.status]}"></div>
+                  <div class="ac-body">
+                    <div class="ac-name">${a.client}</div>
+                    <div class="ac-svc">${a.service}</div>
+                  </div>
+                  <div class="ac-price">R$ ${a.value}</div>
+                  <span class="ac-status" style="background:${STATUS[a.status]}22;color:${STATUS[a.status]}">${a.status}</span>
+                </div>
+              `).join(''):s.showFreeSlots?`<div class="agenda-free">Livre</div>`:''}
             </div>
-          </div>
-        `).join('')}
-    </div>
+          </div>`
+        }).filter(Boolean).join('')}
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;padding:4px 0 8px">
+        <button class="toggle${s.showFreeSlots?' on':''}" onclick="toggleFreeSlots()" style="transform:scale(.8);transform-origin:left center"><span class="knob"></span></button>
+        <span style="font-size:10px;color:var(--text)">Mostrar horarios livres</span>
+      </div>
+    `:`<div>${weekHtml}</div>`}
+    ${s.agendaSelAppt?schedActions(s.agendaSelAppt):''}
+    <button class="btn-primary" onclick="startBooking()" style="margin-top:4px">${svg(I.plus,12)} Novo Agendamento</button>
   `
+}
+function schedActions(id){
+  const a=state.appointments.find(x=>x.id===id)
+  if(!a)return''
+  return`<div class="agenda-actions"><div style="font-size:11px;font-weight:700;color:var(--text-primary);margin-bottom:6px">${a.time} — ${a.client}</div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <button class="act-btn" onclick="editAppt(${a.id})">${svg(I.edit,10)} Editar</button>
+      ${a.status!=='concluido'?`<button class="act-btn act-green" onclick="quickStatus(${a.id},'concluido')">✅ Finalizar</button>`:''}
+      ${a.status!=='cancelado'?`<button class="act-btn act-red" onclick="quickStatus(${a.id},'cancelado')">${svg(I.x,10)} Cancelar</button>`:''}
+    </div></div>`
 }
 
 function renderFinance(entradas,saidas,lucro,filteredTrans,filterFin){
@@ -820,6 +891,14 @@ function prevMonth(){if(state.calMonth===0){state.calMonth=11;state.calYear--}el
 function nextMonth(){if(state.calMonth===11){state.calMonth=0;state.calYear++}else state.calMonth++;render()}
 
 function openSettings(){state.tab='config';state.subtab=null;render()}
+function prevDay(){const d=new Date(state.selectedDate+'T12:00:00');d.setDate(d.getDate()-1);state.selectedDate=d.toISOString().slice(0,10);render()}
+function nextDay(){const d=new Date(state.selectedDate+'T12:00:00');d.setDate(d.getDate()+1);state.selectedDate=d.toISOString().slice(0,10);render()}
+function goToday(){state.selectedDate=today();render()}
+function setAgendaView(v){state.agendaView=v;state.agendaSelAppt=null;render()}
+function setAgendaSearch(v){state.agendaSearch=v;render()}
+function toggleFreeSlots(){state.showFreeSlots=!state.showFreeSlots;render()}
+function selAppt(id){state.agendaSelAppt=state.agendaSelAppt===id?null:id;render()}
+function quickStatus(id,st){state.appointments=state.appointments.map(a=>a.id===id?{...a,status:st}:a);save();if(st==='concluido'){const a=state.appointments.find(x=>x.id===id);if(a&&!state.transactions.find(t=>t.desc.includes(a.client)&&t.desc.includes(a.service)))state.transactions.push({id:Date.now(),desc:`${a.service} — ${a.client}`,type:'entrada',value:a.value,date:a.date,cat:'Servico'});save()}state.agendaSelAppt=null;render()}
 /* BOOKING STEP */
 function startBooking(){
   state.showModal=false;state.stepModal=true;state.step=1;state.editingAppt=null
