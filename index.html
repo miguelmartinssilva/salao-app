@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<meta name="theme-color" id="theme-color" content="#1a0a14">
+<meta name="theme-color" id="theme-color" content="#fdf6ee">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="data:application/json,{}" id="manifest-link">
-<title>Studio Glamour</title>
+<title>Martins MegaHair</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--gold:#c9a84c;--gold-light:#e8c97a;--dark:#1a0a14;--dark2:#2d1020;--rose:#fdf8f4;--rose2:#fdf0e8;--text:#9b7060;--green:#7dc9a0;--red:#c97a7a;--pink:#e0a0c0;--bg:#fdf8f4;--card:#fff;--card-border:#fdf0e8;--input-bg:#fdf8f4;--shadow:rgba(180,100,120,.08);--text-primary:#1a0a14;--text-secondary:#2d1020;--sec-bg:#f5ede8;--sec-border:rgba(201,168,76,.12);--ter-bg:#f0e8e0}
-.dark{--dark:#e8dcd4;--dark2:#d4c8c0;--rose:#1a0a14;--rose2:#2d1020;--text:#f0e8d8;--bg:#0e0a0c;--card:#1a0a14;--card-border:#2d1020;--input-bg:#2d1020;--shadow:rgba(0,0,0,.3);--text-primary:#f0e8d8;--text-secondary:#e8dcd4;--sec-bg:#231620;--sec-border:rgba(201,168,76,.12);--ter-bg:#1a1118}
+:root{--gold:#b8860b;--gold-light:#d4a017;--dark:#1a0e08;--dark2:#2d1810;--rose:#fdf6ee;--rose2:#f5ede0;--text:#8a7a6a;--green:#8cc9a0;--red:#c97a7a;--pink:#e0a0c0;--bg:#fdf6ee;--card:#fff;--card-border:#e8dcc8;--input-bg:#fdf6ee;--shadow:rgba(201,168,76,.1);--text-primary:#1a0e08;--text-secondary:#4a3020;--sec-bg:#faf3e8;--sec-border:rgba(184,134,11,.12);--ter-bg:#f6ede0;--tab-bg:#fff}
+.dark{--gold:#c9a84c;--gold-light:#e8c97a;--dark:#0e0a0c;--dark2:#1a1118;--rose:#231620;--rose2:#2a1c24;--text:#f0e8d8;--bg:#0e0a0c;--card:#1a1118;--card-border:#231620;--input-bg:#231620;--shadow:rgba(0,0,0,.4);--text-primary:#f0e8d8;--text-secondary:#d4c8b8;--sec-bg:#231620;--sec-border:rgba(201,168,76,.12);--ter-bg:#1a1118;--tab-bg:#1a1118}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text-primary);overflow-x:hidden;transition:background .3s,color .3s}
 input,select,button,textarea{font-family:inherit;font-size:inherit}
 .header{background:linear-gradient(160deg,var(--dark),var(--dark2));padding:12px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
@@ -22,7 +22,7 @@ input,select,button,textarea{font-family:inherit;font-size:inherit}
 .header-btn{background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:8px;color:var(--dark);padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
 .icon-btn{background:none;border:none;cursor:pointer;color:rgba(255,220,200,.6);padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center}
 .icon-btn:hover{color:var(--gold)}
-.tabbar{display:flex;background:var(--card);padding:5px 4px;position:sticky;top:56px;z-index:99;box-shadow:0 1px 8px var(--shadow);justify-content:space-around;transition:background .3s}
+.tabbar{display:flex;background:var(--tab-bg);padding:5px 4px;position:sticky;top:56px;z-index:99;box-shadow:0 1px 8px var(--shadow);justify-content:space-around;transition:background .3s}
 .tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;border-radius:8px;border:none;cursor:pointer;background:transparent;color:var(--text);font-size:9px;font-weight:600;width:100%;transition:all .2s}
 .tabbar .active{background:linear-gradient(135deg,#c9a84c22,#c9a84c11);color:var(--gold)}
 .tabbar svg{width:20px;height:20px}
@@ -57,7 +57,7 @@ input,select,button,textarea{font-family:inherit;font-size:inherit}
 .fin-green{color:var(--green)}.fin-red{color:var(--red)}.fin-gold{color:var(--gold)}
 .filter-bar{display:flex;gap:5px;margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .filter-btn{padding:5px 12px;border-radius:16px;border:1px solid var(--card-border);font-size:10px;cursor:pointer;font-weight:600;background:var(--card);color:var(--text);white-space:nowrap;transition:all .2s}
-.filter-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
+.filter-btn.active{background:var(--gold);color:var(--bg);border-color:var(--gold)}
 .trans-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--card-border)}
 .trans-item:last-child{border:none}
 .trans-desc{font-size:12px;color:var(--text-secondary)}
@@ -166,7 +166,7 @@ input,select,button,textarea{font-family:inherit;font-size:inherit}
 .client-badge.gold{background:var(--gold);color:var(--dark)}
 .client-badge.green{background:var(--green);color:#fff}
 .client-badge.pink{background:var(--pink);color:#fff}
-.client-badge.blue{background:#a0c0e0;color:#1a0a14}
+.client-badge.blue{background:#a0c0e0;color:var(--text-primary)}
 .client-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .client-header .cha{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--text-primary);flex-shrink:0}
 .client-header .chd{flex:1}
@@ -258,7 +258,7 @@ function render(){
   const s=state,m=dark()?'dark':''
   if(s.darkMode)document.documentElement.classList.add('dark')
   else document.documentElement.classList.remove('dark')
-  document.querySelector('meta[name=theme-color]').content=s.darkMode?'#0d060e':'#1a0a14'
+  document.querySelector('meta[name=theme-color]').content=s.darkMode?'#0e0a0c':'#fdf6ee'
 
   const app=$$('#app')
   const todayAppts=s.appointments.filter(a=>a.date===s.selectedDate).sort((a,b)=>a.time.localeCompare(b.time))
@@ -296,7 +296,7 @@ function render(){
 <header class="header">
   <div class="header-brand">
     <div class="header-logo">&#9986;</div>
-    <span class="header-title">Studio Glamour</span>
+    <span class="header-title">Martins MegaHair</span>
   </div>
   <div class="header-actions">
     <button class="icon-btn" onclick="toggleDark()" title="Modo escuro">${svg(s.darkMode?I.sun:I.moon,18)}</button>
@@ -880,7 +880,7 @@ function finishBooking(){
   state.appointments.push({id:Date.now(),client:f.client,service:f.service,prof:f.prof||'',time:f.time,date:f.date,status:'pendente',value:parseFloat(f.value)})
   save();state.stepModal=false;toast('Agendamento criado!')
   if(state.notifEnabled&&'Notification'in window&&Notification.permission==='granted'){
-    const d=new Date(f.date+'T'+f.time);const n=new Notification('Studio Glamour',{body:`${f.client} — ${f.service} as ${f.time}`,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="18" font-size="16">✂️</text></svg>'})
+    const d=new Date(f.date+'T'+f.time);const n=new Notification('Martins MegaHair',{body:`${f.client} — ${f.service} as ${f.time}`,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="18" font-size="16">✂️</text></svg>'})
   }
   render()
 }
@@ -998,7 +998,7 @@ function exportClientWhatsApp(){
   syncClients()
   const nums=[...new Set(state.clients.filter(c=>c.whatsapp||c.phone).map(c=>'55'+(c.whatsapp||c.phone).replace(/[^0-9]/g,'')))]
   if(!nums.length)return toast('Nenhum contato com WhatsApp')
-  const text=encodeURIComponent('Oi! Passando pra avisar que temos horarios disponiveis no Studio Glamour essa semana. Me chama pra reservar! 💇‍♀️')
+  const text=encodeURIComponent('Oi! Passando pra avisar que temos horarios disponiveis no Martins MegaHair essa semana. Me chama pra reservar! 💇‍♀️')
   window.open('https://wa.me/?text='+text,'_blank')
   toast(nums.length+' contatos copiados para lista de transmissao')
 }
@@ -1088,8 +1088,8 @@ if('serviceWorker'in navigator){
 (function(){
   const m=document.getElementById('manifest-link')
   const manifest={
-    name:'Studio Glamour',short_name:'Glamour',start_url:'.',display:'standalone',
-    background_color:'#1a0a14',theme_color:'#1a0a14',
+    name:'Martins MegaHair',short_name:'MegaHair',start_url:'.',display:'standalone',
+    background_color:'#fdf6ee',theme_color:'#fdf6ee',
     icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="%23c9a84c"/><text x="24" y="32" font-size="28" text-anchor="middle" fill="%231a0a14">&#9986;</text></svg>',sizes:'48x48',type:'image/svg+xml'}]
   }
   m.href='data:application/json,'+encodeURIComponent(JSON.stringify(manifest))
