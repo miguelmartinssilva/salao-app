@@ -216,10 +216,10 @@ let state = {
   filterFin:'todos',clientSearch:'',clientFilter:'todos',clientSort:'nome',clientDetail:null,
   toast:null,loading:false,
   showModal:false,showTransModal:false,showServicesModal:false,showProModal:false,showClientModal:false,
-  stepModal:false,step:1,totalSteps:4,
+  stepModal:false,step:1,totalSteps:3,
   editingAppt:null,editingService:null,editingPro:null,editingClient:null,
   darkMode:load('darkMode',false),
-  formAppt:{client:'',service:'',prof:'',time:'09:00',date:today(),value:''},
+  formAppt:{client:'',service:'',time:'09:00',date:today(),value:''},
   formTrans:{desc:'',type:'entrada',value:'',date:today(),cat:'Servico'},
   formService:{name:'',price:''},
   formPro:{name:''},
@@ -636,31 +636,6 @@ function renderClientDetail(s,colors){
 function renderServicos(s){
   return`
     <div class="card">
-      <div class="card-title">Servicos</div>
-      <div style="margin-bottom:10px">
-        ${s.services.map(sv=>`
-          <span class="service-chip${s.formAppt.service===sv.name?' active':''}">
-            ${sv.name} (R$ ${sv.price})
-            <span class="del" onclick="deleteService(${sv.id})">×</span>
-          </span>
-        `).join('')}
-      </div>
-      <button class="btn-primary" onclick="openServiceModal()" style="margin-bottom:0;padding:10px;font-size:12px">${svg(I.plus,12)} Novo Servico</button>
-    </div>
-    <div class="card">
-      <div class="card-title">Profissionais</div>
-      ${s.pros.map(p=>`
-        <div class="appt-item">
-          <div class="appt-info"><div class="name">${p.name}</div></div>
-          <div style="display:flex;gap:6px">
-            <button onclick="editPro(${p.id})" style="background:none;border:none;cursor:pointer;color:var(--text);padding:3px">${svg(I.edit,12)}</button>
-            <button onclick="deletePro(${p.id})" style="background:none;border:none;cursor:pointer;color:var(--red);padding:3px">${svg(I.trash,12)}</button>
-          </div>
-        </div>
-      `).join('')}
-      <button class="btn-primary" onclick="openProModal()" style="margin-bottom:0;padding:10px;font-size:12px;margin-top:8px">${svg(I.plus,12)} Novo Profissional</button>
-    </div>
-    <div class="card">
       <div class="card-title">Configuracoes</div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
         <span style="font-size:12px;color:var(--text-primary)">Modo escuro</span>
@@ -681,8 +656,6 @@ function renderServicos(s){
 function renderApptModal(s,stepsHtml){
   const isEdit=s.editingAppt
   const title=isEdit?'Editar Agendamento':s.stepModal?`Passo ${s.step} de ${s.totalSteps}`:'Novo Agendamento'
-  const svcs=s.services
-  const pros=s.pros
 
   let body=''
   if(isEdit||!s.stepModal){
@@ -692,18 +665,16 @@ function renderApptModal(s,stepsHtml){
         <div class="form-group"><label>Data</label><input type="date" value="${s.formAppt.date}" oninput="formAppt('date',this.value)"></div>
         <div class="form-group"><label>Horario</label><input type="time" value="${s.formAppt.time}" oninput="formAppt('time',this.value)"></div>
       </div>
-      <div class="form-group"><label>Servico</label><select onchange="formAppt('service',this.value)">${svcs.map(sv=>`<option value="${sv.name}" ${s.formAppt.service===sv.name?'selected':''}>${sv.name} — R$ ${sv.price}</option>`).join('')}</select></div>
-      ${pros.length?`<div class="form-group"><label>Profissional</label><select onchange="formAppt('prof',this.value)"><option value="">Qualquer</option>${pros.map(p=>`<option value="${p.name}" ${s.formAppt.prof===p.name?'selected':''}>${p.name}</option>`).join('')}</select></div>`:''}
+      <div class="form-group"><label>Servico</label><input placeholder="Ex: Corte feminino" value="${s.formAppt.service}" oninput="formAppt('service',this.value)"></div>
       <div class="form-group"><label>Valor (R$)</label><input type="number" placeholder="0" value="${s.formAppt.value}" oninput="formAppt('value',this.value)"></div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
         <button class="btn-gold" onclick="${isEdit?'saveEditAppt()':'saveApptDirect()'}">${isEdit?'Salvar':'Agendar'}</button>
       </div>`
   }else{
-    if(s.step===1) body=step1(svcs)
-    else if(s.step===2) body=step2(pros)
+    if(s.step===1) body=step1(s)
+    else if(s.step===2) body=step2(s)
     else if(s.step===3) body=step3(s)
-    else if(s.step===4) body=step4(s)
   }
 
   return`
@@ -719,35 +690,17 @@ function renderApptModal(s,stepsHtml){
     </div>`
 }
 
-function step1(svcs){
+function step1(s){
   return`
-    <div class="form-group"><label>Escolha o servico</label></div>
-    ${svcs.map(sv=>`
-      <div onclick="stepSelectService(${sv.id})" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;border:1px solid var(--card-border);margin-bottom:6px;cursor:pointer;background:var(--card);transition:all .2s">
-        <span style="font-size:13px;color:var(--text-primary)">${sv.name}</span>
-        <span style="font-weight:700;color:var(--gold);font-size:13px">R$ ${sv.price}</span>
-      </div>
-    `).join('')}
-  `
-}
-
-function step2(pros){
-  if(!pros.length) return step3(state)
-  return`
-    <div class="form-group"><label>Escolha o profissional</label></div>
-    <div onclick="stepSelectPro('')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--card-border);margin-bottom:6px;cursor:pointer;background:var(--card)">
-      <span style="font-size:13px;color:var(--text-primary)">Qualquer profissional</span>
+    <div class="form-group"><label>Servico</label><input placeholder="Ex: Corte feminino" value="${s.formAppt.service}" oninput="formAppt('service',this.value)"></div>
+    <div class="form-group"><label>Valor (R$)</label><input type="number" placeholder="0" value="${s.formAppt.value}" oninput="formAppt('value',this.value)"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn-gold" onclick="nextStep()" style="flex:1">Prosseguir</button>
     </div>
-    ${pros.map(p=>`
-      <div onclick="stepSelectPro('${p.name}')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--card-border);margin-bottom:6px;cursor:pointer;background:var(--card)">
-        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--dark)">${p.name.charAt(0)}</div>
-        <span style="font-size:13px;color:var(--text-primary)">${p.name}</span>
-      </div>
-    `).join('')}
   `
 }
 
-function step3(s){
+function step2(s){
   return`
     <div class="form-group"><label>Nome da cliente</label><input placeholder="Nome" value="${s.formAppt.client}" oninput="formAppt('client',this.value)"></div>
     <div class="form-group" style="margin-top:8px"><label>Data e horario</label></div>
@@ -767,15 +720,14 @@ function step3(s){
   `
 }
 
-function step4(s){
-  const svc=s.services.find(x=>x.name===s.formAppt.service)
+function step3(s){
   return`
     <div style="text-align:center;padding:10px 0">
       <div style="font-size:40px;margin-bottom:8px">&#9986;</div>
       <div style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:4px">${s.formAppt.client}</div>
-      <div style="font-size:13px;color:var(--text);margin-bottom:2px">${s.formAppt.service}${s.formAppt.prof?' com '+s.formAppt.prof:''}</div>
+      <div style="font-size:13px;color:var(--text);margin-bottom:2px">${s.formAppt.service}</div>
       <div style="font-size:13px;color:var(--text);margin-bottom:8px">${s.formAppt.date.split('-').reverse().join('/')} as ${s.formAppt.time}</div>
-      <div style="font-size:20px;font-weight:700;color:var(--gold)">R$ ${s.formAppt.value||(svc?svc.price:'0')}</div>
+      <div style="font-size:20px;font-weight:700;color:var(--gold)">R$ ${s.formAppt.value||'0'}</div>
     </div>
     <div style="display:flex;gap:8px;margin-top:8px">
       <button class="btn-secondary" onclick="prevStep()">Voltar</button>
@@ -865,24 +817,15 @@ function openSettings(){state.tab='servicos';state.subtab=null;render()}
 /* BOOKING STEP */
 function startBooking(){
   state.showModal=false;state.stepModal=true;state.step=1;state.editingAppt=null
-  state.formAppt={client:'',service:state.services[0]?state.services[0].name:'',prof:'',time:'09:00',date:state.selectedDate,value:''}
+  state.formAppt={client:'',service:'',time:'09:00',date:state.selectedDate,value:''}
   render()
-}
-function stepSelectService(id){
-  const sv=state.services.find(x=>x.id===id)
-  if(!sv)return
-  state.formAppt.service=sv.name;state.formAppt.value=sv.price.toString()
-  state.step=2;render()
-}
-function stepSelectPro(name){
-  state.formAppt.prof=name;state.step=3;render()
 }
 function prevStep(){state.step--;render()}
 function nextStep(){state.step++;render()}
 function finishBooking(){
   const f=state.formAppt
   if(!f.client||!f.service||!f.value)return toast('Preencha todos os campos')
-  state.appointments.push({id:Date.now(),client:f.client,service:f.service,prof:f.prof||'',time:f.time,date:f.date,status:'pendente',value:parseFloat(f.value)})
+  state.appointments.push({id:Date.now(),client:f.client,service:f.service,prof:'',time:f.time,date:f.date,status:'pendente',value:parseFloat(f.value)})
   save();state.stepModal=false;toast('Agendamento criado!')
   if(state.notifEnabled&&'Notification'in window&&Notification.permission==='granted'){
     const d=new Date(f.date+'T'+f.time);const n=new Notification('Martins MegaHair',{body:`${f.client} — ${f.service} as ${f.time}`,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="18" font-size="16">✂️</text></svg>'})
@@ -892,18 +835,18 @@ function finishBooking(){
 function saveApptDirect(){
   const f=state.formAppt
   if(!f.client||!f.value||!f.service)return toast('Preencha todos os campos')
-  state.appointments.push({id:Date.now(),client:f.client,service:f.service,prof:f.prof||'',time:f.time,date:f.date,status:'pendente',value:parseFloat(f.value)})
+  state.appointments.push({id:Date.now(),client:f.client,service:f.service,prof:'',time:f.time,date:f.date,status:'pendente',value:parseFloat(f.value)})
   save();state.showModal=false;state.editingAppt=null;toast('Agendamento criado!');render()
 }
 
-function openModal(){state.showModal=true;state.stepModal=false;state.editingAppt=null;state.formAppt={client:'',service:state.services[0]?state.services[0].name:'',prof:'',time:'09:00',date:state.selectedDate,value:''};render()}
+function openModal(){state.showModal=true;state.stepModal=false;state.editingAppt=null;state.formAppt={client:'',service:'',time:'09:00',date:state.selectedDate,value:''};render()}
 function closeModal(e){if(e&&e.target!==e.currentTarget)return;state.showModal=false;state.stepModal=false;state.editingAppt=null;state.loading=false;render()}
 function formAppt(f,v){state.formAppt[f]=v}
 function editAppt(id){
   const a=state.appointments.find(x=>x.id===id)
   if(!a)return
   state.editingAppt=a;state.stepModal=false;state.showModal=true
-  state.formAppt={client:a.client,service:a.service,prof:a.prof||'',time:a.time,date:a.date,value:a.value.toString()};render()
+  state.formAppt={client:a.client,service:a.service,time:a.time,date:a.date,value:a.value.toString()};render()
 }
 function saveEditAppt(){
   const f=state.formAppt,e=state.editingAppt
@@ -981,10 +924,10 @@ function deleteClient(name){
 }
 function startBookingFromClient(name){
   state.showModal=false;state.stepModal=true;state.step=1;state.editingAppt=null
-  state.formAppt={client:name,service:state.services[0]?state.services[0].name:'',prof:'',time:'09:00',date:today(),value:''}
+  state.formAppt={client:name,service:'',time:'09:00',date:today(),value:''}
   state.subtab=null;state.clientDetail=null;state.tab='agenda'
   render()
-  setTimeout(()=>{state.step=3;render()},100)
+  setTimeout(()=>{state.step=2;render()},100)
 }
 
 function exportClientCSV(){
@@ -1006,54 +949,6 @@ function exportClientWhatsApp(){
   const text=encodeURIComponent('Oi! Passando pra avisar que temos horarios disponiveis no Martins MegaHair essa semana. Me chama pra reservar! 💇‍♀️')
   window.open('https://wa.me/?text='+text,'_blank')
   toast(nums.length+' contatos copiados para lista de transmissao')
-}
-
-/* SERVICES */
-function openServiceModal(service){
-  state.showServicesModal=true
-  state.editingService=service||null
-  state.formService=service?{name:service.name,price:service.price.toString()}:{name:'',price:''}
-  render()
-}
-function closeServiceModal(e){if(e&&e.target!==e.currentTarget)return;state.showServicesModal=false;state.editingService=null;render()}
-function formService(f,v){state.formService[f]=v}
-function saveService(){
-  const f=state.formService
-  if(!f.name||!f.price)return toast('Preencha todos os campos')
-  if(state.editingService){
-    state.services=state.services.map(s=>s.id===state.editingService.id?{...s,name:f.name,price:parseFloat(f.price)}:s)
-  }else{
-    state.services.push({id:Date.now(),name:f.name,price:parseFloat(f.price)})
-  }
-  save();state.showServicesModal=false;state.editingService=null;toast('Servico salvo!');render()
-}
-function deleteService(id){
-  if(!confirm('Excluir servico?'))return
-  state.services=state.services.filter(s=>s.id!==id);save();render()
-}
-
-/* PROFESSIONALS */
-function openProModal(pro){
-  state.showProModal=true
-  state.editingPro=pro||null
-  state.formPro=pro?{name:pro.name}:{name:''}
-  render()
-}
-function closeProModal(e){if(e&&e.target!==e.currentTarget)return;state.showProModal=false;state.editingPro=null;render()}
-function formPro(f,v){state.formPro[f]=v}
-function savePro(){
-  const f=state.formPro
-  if(!f.name)return toast('Digite o nome')
-  if(state.editingPro){
-    state.pros=state.pros.map(p=>p.id===state.editingPro.id?{...p,name:f.name}:p)
-  }else{
-    state.pros.push({id:Date.now(),name:f.name})
-  }
-  save();state.showProModal=false;state.editingPro=null;toast('Profissional salvo!');render()
-}
-function deletePro(id){
-  if(!confirm('Excluir profissional?'))return
-  state.pros=state.pros.filter(p=>p.id!==id);save();render()
 }
 
 /* NOTIFICATIONS */
