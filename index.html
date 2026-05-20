@@ -188,6 +188,20 @@ input,select,button,textarea{font-family:inherit;font-size:inherit}
 .config-input:focus{border-color:var(--gold)}
 .chip{display:inline-block;padding:5px 10px;border-radius:14px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--card-border);background:var(--card);color:var(--text);transition:all .2s;user-select:none}
 .chip.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.dash-card{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:10px;display:flex;align-items:center;gap:8px}
+.dash-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.dash-info{flex:1;min-width:0}
+.dash-val{font-size:14px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-lbl{font-size:9px;color:var(--text);margin-top:1px}
+.shortcuts-grid-dash{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.shortcut-dash{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:10px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .2s;font-size:11px;color:var(--text-primary);font-weight:600}
+.shortcut-dash:active{transform:scale(.97)}
+.sd-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sem-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sem-item{background:var(--rose2);border-radius:8px;padding:10px;text-align:center}
+.sem-val{font-size:15px;font-weight:700;color:var(--text-primary)}
+.sem-lbl{font-size:9px;color:var(--text);margin-top:2px}
 </style>
 </head>
 <body>
@@ -285,7 +299,7 @@ function render(){
     {id:'agenda',label:'Agenda',icon:I.cal},
     {id:'financeiro',label:'Financas',icon:I.fin},
     {id:'clientes',label:'Clientes',icon:I.cli},
-    {id:'config',label:'Config',icon:I.settings},
+    {id:'config',label:'Config',icon:svg(I.settings,20)},
   ]
 
   const stepsHtml=s.stepModal?`
@@ -328,8 +342,6 @@ function render(){
 ${s.toast?`<div class="toast">${s.toast}</div>`:''}
 ${s.showModal||s.stepModal?renderApptModal(s,stepsHtml):''}
 ${s.showTransModal?renderTransModal(s):''}
-${s.showServicesModal?renderServicesModal(s):''}
-${s.showProModal?renderProModal(s):''}
 ${s.showClientModal?renderClientModal(s):''}
 `}
 
@@ -337,80 +349,62 @@ function dark(){return state.darkMode}
 function toggleDark(){state.darkMode=!state.darkMode;save();render()}
 
 function renderDashboard(entradas,saidas,lucro,todayAppts,s){
-  const ticket=Math.round(entradas/(s.transactions.filter(t=>t.type==='entrada').length||1))
-  const margem=entradas?Math.round(lucro/entradas*100):0
+  const h=new Date().getHours()
+  const greet=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'
+  const hojeRev=todayAppts.reduce((x,a)=>x+(a.status==='cancelado'?0:a.value),0)
+  const hojeCli=new Set(todayAppts.filter(a=>a.status!=='cancelado').map(a=>a.client)).size
+  const prox=todayAppts.filter(a=>a.status!=='cancelado'&&a.time>=today().slice(0,10)?'00:00':a.time).sort((a,b)=>a.time.localeCompare(b.time))[0]
+  const slots=['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00']
+  const booked=todayAppts.filter(a=>a.status!=='cancelado').map(a=>a.time)
+  const livres=slots.filter(t=>!booked.includes(t)).length
+
+  const now=new Date(),dow=now.getDay(),seg=new Date(now);seg.setDate(now.getDate()-(dow===0?6:dow-1))
+  const dom=new Date(seg);dom.setDate(seg.getDate()+6)
+  const wkApps=s.appointments.filter(a=>a.date>=seg.toISOString().slice(0,10)&&a.date<=dom.toISOString().slice(0,10))
+  const wkRev=wkApps.reduce((x,a)=>x+(a.status==='cancelado'?0:a.value),0)
+  const wkCli=new Set(wkApps.map(a=>a.client)).size
+  const wkNew=s.clients.filter(c=>c.createdAt&&c.createdAt>=seg.toISOString().slice(0,10)&&c.createdAt<=dom.toISOString().slice(0,10)).length
+
   return`
-    <div class="kpis">
-      <div class="kpi-card" style="border-color:var(--gold)"><div class="kpi-label">Receita mes</div><div class="kpi-value">R$ ${entradas.toLocaleString('pt-BR')}</div></div>
-      <div class="kpi-card" style="border-color:var(--pink)"><div class="kpi-label">Agendamentos</div><div class="kpi-value">${s.appointments.length}</div></div>
-      <div class="kpi-card" style="border-color:var(--green)"><div class="kpi-label">Ticket medio</div><div class="kpi-value">R$ ${ticket}</div></div>
-      <div class="kpi-card" style="border-color:var(--red)"><div class="kpi-label">Despesas</div><div class="kpi-value">R$ ${saidas.toLocaleString('pt-BR')}</div></div>
+    <div style="padding:6px 0 10px">
+      <div style="font-size:15px;font-weight:700;color:var(--text-primary)">👋 ${greet}!</div>
+      <div style="font-size:11px;color:var(--text);margin-top:2px">Hoje voce tem ${todayAppts.length} agendamento${todayAppts.length!==1?'s':''}</div>
     </div>
+
+    <div class="dash-grid">
+      <div class="dash-card"><div class="dash-icon" style="background:rgba(201,168,76,0.12);color:var(--gold)">📅</div><div class="dash-info"><div class="dash-val">${todayAppts.length}</div><div class="dash-lbl">Agendamentos</div></div></div>
+      <div class="dash-card"><div class="dash-icon" style="background:rgba(124,201,160,0.12);color:var(--green)">💰</div><div class="dash-info"><div class="dash-val">R$ ${hojeRev}</div><div class="dash-lbl">Faturamento</div></div></div>
+      <div class="dash-card"><div class="dash-icon" style="background:rgba(224,160,192,0.12);color:var(--pink)">👥</div><div class="dash-info"><div class="dash-val">${hojeCli}</div><div class="dash-lbl">Clientes</div></div></div>
+      <div class="dash-card"><div class="dash-icon" style="background:rgba(160,192,224,0.12);color:#8ab">⏰</div><div class="dash-info"><div class="dash-val" style="font-size:13px">${prox?prox.time+' — '+prox.client:'---'}</div><div class="dash-lbl">Proximo</div></div></div>
+    </div>
+
     <div class="card">
-      <div class="card-title" style="margin-bottom:10px">Hoje — ${todayAppts.length} agendamento${todayAppts.length!==1?'s':''}</div>
-      ${todayAppts.length===0?`<div class="empty-state"><div class="icon">&#9986;</div><div class="msg">Nenhum agendamento hoje</div></div>`:
+      <div class="card-title" style="margin-bottom:8px">Agenda do Dia</div>
+      ${todayAppts.length===0?`<div class="empty-state"><div class="icon">&#128197;</div><div class="msg">Nenhum agendamento hoje</div><button class="btn-gold" onclick="startBooking()" style="margin-top:8px;padding:8px 20px;font-size:12px">${svg(I.plus,12)} Novo Agendamento</button></div>`:
         todayAppts.map(a=>`
-          <div class="appt-item">
+          <div class="appt-item" onclick="editAppt(${a.id})" style="cursor:pointer">
             <div class="appt-time"><div class="t">${a.time}</div></div>
-            <div class="appt-info"><div class="name">${a.client}</div><div class="service">${a.service}${a.prof?' • '+a.prof:''}</div></div>
-            <select class="appt-status" style="background:${STATUS[a.status]}33;color:${STATUS[a.status]}" onchange="updateStatus(${a.id},this.value)">
-              <option value="pendente" ${a.status==='pendente'?'selected':''}>Pendente</option>
-              <option value="confirmado" ${a.status==='confirmado'?'selected':''}>Confirmado</option>
-              <option value="concluido" ${a.status==='concluido'?'selected':''}>Concluido</option>
-              <option value="cancelado" ${a.status==='cancelado'?'selected':''}>Cancelado</option>
-            </select>
+            <div class="appt-info"><div class="name">${a.client}</div><div class="service">${a.service}</div></div>
+            <span class="appt-status" style="background:${STATUS[a.status]}33;color:${STATUS[a.status]}">${a.status}</span>
           </div>
         `).join('')}
+      <button class="btn-primary" onclick="startBooking()" style="margin-top:8px">${svg(I.plus,12)} Novo Agendamento</button>
     </div>
-    <div class="card">
-      <div class="card-title">Resumo Financeiro</div>
-      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12px"><span style="color:var(--text)">Entradas</span><span style="font-weight:700;color:var(--green)">R$ ${entradas.toLocaleString('pt-BR')}</span></div>
-      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12px"><span style="color:var(--text)">Saidas</span><span style="font-weight:700;color:var(--red)">R$ ${saidas.toLocaleString('pt-BR')}</span></div>
-      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12px"><span style="color:var(--text)">Lucro</span><span style="font-weight:700;color:var(--gold)">R$ ${lucro.toLocaleString('pt-BR')}</span></div>
-      <div style="background:var(--rose2);border-radius:6px;padding:8px;margin-top:6px">
-        <div style="font-size:9px;color:var(--text);margin-bottom:3px">Margem: ${margem}%</div>
-        <div style="height:4px;background:var(--card-border);border-radius:4px;overflow:hidden"><div style="height:100%;width:${Math.min(margem,100)}%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:4px"></div></div>
-      </div>
+
+    <div class="shortcuts-grid-dash">
+      <button class="shortcut-dash" onclick="openClientModal()"><div class="sd-icon" style="background:rgba(224,160,192,0.12);color:var(--pink)">${svg(I.plus,16)}</div><span>Novo Cliente</span></button>
+      <button class="shortcut-dash" onclick="setTab('agenda')"><div class="sd-icon" style="background:rgba(201,168,76,0.12);color:var(--gold)">${svg(I.cal,16)}</div><span>Abrir Agenda</span></button>
+      <button class="shortcut-dash" onclick="openTransModal()"><div class="sd-icon" style="background:rgba(124,201,160,0.12);color:var(--green)">${svg(I.fin,16)}</div><span>Registrar Pagamento</span></button>
+      <button class="shortcut-dash" onclick="setTab('config')"><div class="sd-icon" style="background:rgba(160,160,160,0.12);color:var(--text)">${svg(I.settings,16)}</div><span>Configurar</span></button>
     </div>
+
     <div class="card">
-      <div class="card-title">Atalhos</div>
-      <div class="shortcuts-grid">
-        <button class="shortcut-primary" onclick="startBooking()">
-          <div class="s-icon">${svg(I.plus,20)}</div>
-          <div class="s-text">
-            <div class="s-label">+ Novo Agendamento</div>
-            <div class="s-hint">Adicionar horário rapidamente</div>
-          </div>
-          <span class="s-arrow">${svg(I.right,18)}</span>
-        </button>
-
-        <button class="shortcut-secondary" onclick="setTab('financeiro')">
-          <div class="s-icon" style="background:rgba(124,201,160,0.15);color:var(--green)">${svg(I.fin,18)}</div>
-          <div class="s-label">Finanças</div>
-          <div class="s-hint">Receitas, despesas e lucro</div>
-        </button>
-
-        <button class="shortcut-secondary" onclick="setTab('clientes')">
-          <div class="s-icon" style="background:rgba(224,160,192,0.15);color:var(--pink)">${svg(I.cli,18)}</div>
-          <div class="s-label">Clientes</div>
-          <div class="s-hint">Histórico e visitas</div>
-        </button>
-
-        <button class="shortcut-tertiary" onclick="setTab('servicos')">
-          <div class="s-icon" style="background:rgba(201,168,76,0.15);color:var(--gold)">${svg(I.servicos,16)}</div>
-          <div class="s-text">
-            <div class="s-label">Serviços <span class="badge" style="background:var(--gold);color:var(--dark);font-size:8px">${s.services.length}</span></div>
-            <div class="s-hint">Gerenciar serviços e preços</div>
-          </div>
-        </button>
-
-        <button class="shortcut-tertiary" onclick="openSettings()">
-          <div class="s-icon" style="background:rgba(160,160,160,0.15);color:var(--text)">${svg(I.settings,16)}</div>
-          <div class="s-text">
-            <div class="s-label">Configurar</div>
-            <div class="s-hint">Profissionais e preferências</div>
-          </div>
-        </button>
+      <div class="card-title" style="margin-bottom:8px">Resumo da Semana</div>
+      <div class="sem-grid">
+        <div class="sem-item"><div class="sem-val">R$ ${wkRev}</div><div class="sem-lbl">Faturamento</div></div>
+        <div class="sem-item"><div class="sem-val">${wkNew}</div><div class="sem-lbl">Novos Clientes</div></div>
+        <div class="sem-item"><div class="sem-val">${wkApps.length}</div><div class="sem-lbl">Atendimentos</div></div>
+        <div class="sem-item"><div class="sem-val">${livres}</div><div class="sem-lbl">Horarios Livres</div></div>
       </div>
     </div>
   `
@@ -794,31 +788,6 @@ function renderTransModal(s){
           <option value="Outros" ${s.formTrans.cat==='Outros'?'selected':''}>Outros</option>
         </select></div>
         <div style="display:flex;gap:8px"><button class="btn-secondary" onclick="closeTransModal()">Cancelar</button><button class="btn-gold" onclick="saveTrans()">Salvar</button></div>
-      </div>
-    </div>`
-}
-
-function renderServicesModal(s){
-  const isEdit=s.editingService
-  return`
-    <div class="modal-overlay" onclick="closeServiceModal(event)">
-      <div class="modal-content">
-        <div class="modal-header"><h3>${isEdit?'Editar':'Novo'} Servico</h3><button class="modal-close" onclick="closeServiceModal()">${svg(I.x,16)}</button></div>
-        <div class="form-group"><label>Nome</label><input value="${s.formService.name}" oninput="formService('name',this.value)" placeholder="Ex: Corte feminino"></div>
-        <div class="form-group"><label>Preco (R$)</label><input type="number" value="${s.formService.price}" oninput="formService('price',this.value)" placeholder="0"></div>
-        <div style="display:flex;gap:8px"><button class="btn-secondary" onclick="closeServiceModal()">Cancelar</button><button class="btn-gold" onclick="saveService()">${isEdit?'Salvar':'Adicionar'}</button></div>
-      </div>
-    </div>`
-}
-
-function renderProModal(s){
-  const isEdit=s.editingPro
-  return`
-    <div class="modal-overlay" onclick="closeProModal(event)">
-      <div class="modal-content">
-        <div class="modal-header"><h3>${isEdit?'Editar':'Novo'} Profissional</h3><button class="modal-close" onclick="closeProModal()">${svg(I.x,16)}</button></div>
-        <div class="form-group"><label>Nome</label><input value="${s.formPro.name}" oninput="formPro('name',this.value)" placeholder="Nome do profissional"></div>
-        <div style="display:flex;gap:8px"><button class="btn-secondary" onclick="closeProModal()">Cancelar</button><button class="btn-gold" onclick="savePro()">${isEdit?'Salvar':'Adicionar'}</button></div>
       </div>
     </div>`
 }
