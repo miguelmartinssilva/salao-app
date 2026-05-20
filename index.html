@@ -319,12 +319,11 @@ function render(){
 </main>
 
 ${s.toast?`<div class="toast">${s.toast}</div>`:''}
-${s.showModal?renderApptModal(s,stepsHtml):''}
+${s.showModal||s.stepModal?renderApptModal(s,stepsHtml):''}
 ${s.showTransModal?renderTransModal(s):''}
 ${s.showServicesModal?renderServicesModal(s):''}
 ${s.showProModal?renderProModal(s):''}
 ${s.showClientModal?renderClientModal(s):''}
-${s.stepModal?s.loading?`<div class="modal-overlay"><div class="modal-content"><div class="text-center" style="padding:30px"><div class="spinner"></div><div style="margin-top:10px;color:var(--text);font-size:13px">Salvando...</div></div></div></div>`:'':''}
 `}
 
 function dark(){return state.darkMode}
@@ -860,7 +859,7 @@ function nextMonth(){if(state.calMonth===11){state.calMonth=0;state.calYear++}el
 function openSettings(){state.tab='servicos';state.subtab=null;render()}
 /* BOOKING STEP */
 function startBooking(){
-  state.stepModal=true;state.step=1;state.editingAppt=null
+  state.showModal=false;state.stepModal=true;state.step=1;state.editingAppt=null
   state.formAppt={client:'',service:state.services[0]?state.services[0].name:'',prof:'',time:'09:00',date:state.selectedDate,value:''}
   render()
 }
@@ -892,7 +891,7 @@ function saveApptDirect(){
 }
 
 function openModal(){state.showModal=true;state.stepModal=false;state.editingAppt=null;state.formAppt={client:'',service:state.services[0]?state.services[0].name:'',prof:'',time:'09:00',date:state.selectedDate,value:''};render()}
-function closeModal(e){if(e&&e.target!==e.currentTarget)return;state.showModal=false;state.stepModal=false;state.editingAppt=null;render()}
+function closeModal(e){if(e&&e.target!==e.currentTarget)return;state.showModal=false;state.stepModal=false;state.editingAppt=null;state.loading=false;render()}
 function formAppt(f,v){state.formAppt[f]=v}
 function editAppt(id){
   const a=state.appointments.find(x=>x.id===id)
@@ -975,7 +974,7 @@ function deleteClient(name){
   state.clients=state.clients.filter(c=>c.name!==name);save();toast('Cliente removido');goBack();render()
 }
 function startBookingFromClient(name){
-  state.stepModal=true;state.step=1;state.editingAppt=null
+  state.showModal=false;state.stepModal=true;state.step=1;state.editingAppt=null
   state.formAppt={client:name,service:state.services[0]?state.services[0].name:'',prof:'',time:'09:00',date:today(),value:''}
   state.subtab=null;state.clientDetail=null;state.tab='agenda'
   render()
