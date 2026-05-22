@@ -239,6 +239,7 @@ input,select,button,textarea{font-family:inherit;font-size:inherit}
 .agenda-card .ac-svc{font-size:9px;color:var(--text);margin-top:1px}
 .agenda-card .ac-price{font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0}
 .agenda-card .ac-status{font-size:8px;padding:2px 6px;border-radius:8px;font-weight:600;flex-shrink:0}
+.agenda-card .ac-time{font-size:11px;font-weight:700;color:var(--text-primary);width:30px;flex-shrink:0}
 .agenda-free{padding:10px 8px;font-size:10px;color:var(--text);font-style:italic}
 .agenda-actions{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:10px;margin:8px 0}
 .act-btn{padding:6px 10px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);color:var(--text-primary);font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px}
@@ -290,6 +291,7 @@ let state = {
 }
 
 function save(){localStorage.setItem('appts',JSON.stringify(state.appointments));localStorage.setItem('trans',JSON.stringify(state.transactions));localStorage.setItem('services',JSON.stringify(state.services));localStorage.setItem('pros',JSON.stringify(state.pros));localStorage.setItem('clients',JSON.stringify(state.clients));localStorage.setItem('darkMode',JSON.stringify(state.darkMode));localStorage.setItem('notifEnabled',JSON.stringify(state.notifEnabled));localStorage.setItem('config',JSON.stringify(state.config))}
+function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
 
 function svg(path,size=16){return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`}
 const I={
@@ -318,6 +320,11 @@ const I={
 
 function render(){
   const s=state,m=dark()?'dark':''
+  const focusedId = document.activeElement?document.activeElement.id:null
+  const focusedTag = document.activeElement?document.activeElement.tagName:null
+  if(focusedId||focusedTag==='INPUT'||focusedTag==='TEXTAREA'||focusedTag==='SELECT'){
+    var _selStart=document.activeElement.selectionStart,_selEnd=document.activeElement.selectionEnd,_focusId=focusedId
+  }
   if(s.darkMode)document.documentElement.classList.add('dark')
   else document.documentElement.classList.remove('dark')
   document.querySelector('meta[name=theme-color]').content=s.darkMode?'#0e0a0c':'#fdf6ee'
@@ -384,7 +391,12 @@ ${s.toast?`<div class="toast">${s.toast}</div>`:''}
 ${s.showModal||s.stepModal?renderApptModal(s,stepsHtml):''}
 ${s.showTransModal?renderTransModal(s):''}
 ${s.showClientModal?renderClientModal(s):''}
-`}
+`
+  if(typeof _focusId!=='undefined'){
+    const el=_focusId?document.getElementById(_focusId):document.querySelector('.main input:not([type=hidden]),.main textarea,.main select')
+    if(el&&el.focus){el.focus();if(typeof _selStart==='number')try{el.setSelectionRange(_selStart,_selEnd)}catch(e){}}
+  }
+}
 
 function dark(){return state.darkMode}
 function toggleDark(){state.darkMode=!state.darkMode;save();render()}
@@ -394,10 +406,10 @@ function renderDashboard(entradas,saidas,lucro,todayAppts,s){
   const greet=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'
   const hojeRev=todayAppts.reduce((x,a)=>x+(a.status==='cancelado'?0:a.value),0)
   const hojeCli=new Set(todayAppts.filter(a=>a.status!=='cancelado').map(a=>a.client)).size
-  const prox=todayAppts.filter(a=>a.status!=='cancelado'&&a.time>=today().slice(0,10)?'00:00':a.time).sort((a,b)=>a.time.localeCompare(b.time))[0]
-  const slots=['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00']
-  const booked=todayAppts.filter(a=>a.status!=='cancelado').map(a=>a.time)
-  const livres=slots.filter(t=>!booked.includes(t)).length
+  const nowTime=new Date().toTimeString().slice(0,5);const prox=todayAppts.filter(a=>a.status!=='cancelado'&&a.time>=nowTime&&s.selectedDate===today()).sort((a,b)=>a.time.localeCompare(b.time))[0]
+  const cfg=s.config;let oh,om,ch,cm;[oh,om]=cfg.openTime.split(':').map(Number);[ch,cm]=cfg.closeTime.split(':').map(Number)
+  const dSlots=[];for(let m=oh*60+om;m<ch*60+cm;m+=60){const hr=Math.floor(m/60),min=m%60;dSlots.push(String(hr).padStart(2,'0')+':'+String(min).padStart(2,'0'))}
+  const booked=todayAppts.filter(a=>a.status!=='cancelado').map(a=>a.time);const livres=dSlots.filter(t=>!booked.includes(t)).length
 
   const now=new Date(),dow=now.getDay(),seg=new Date(now);seg.setDate(now.getDate()-(dow===0?6:dow-1))
   const dom=new Date(seg);dom.setDate(seg.getDate()+6)
@@ -452,8 +464,7 @@ function renderDashboard(entradas,saidas,lucro,todayAppts,s){
 }
 
 function renderAgenda(s,firstDay,daysInMonth,apptDates,todayAppts){
-  const cfg=s.config
-  const [oh,om]=cfg.openTime.split(':').map(Number),[ch,cm]=cfg.closeTime.split(':').map(Number)
+  const cfg=s.config;let oh,om,ch,cm;[oh,om]=cfg.openTime.split(':').map(Number);[ch,cm]=cfg.closeTime.split(':').map(Number)
   const startMin=oh*60+om,endMin=ch*60+cm
   const slots=[]
   for(let m=startMin;m<endMin;m+=60){
@@ -487,7 +498,7 @@ function renderAgenda(s,firstDay,daysInMonth,apptDates,todayAppts){
       <button onclick="nextDay()">${svg(I.right,14)}</button>
       <button class="agenda-hoje" onclick="goToday()">Hoje</button>
     </div>
-    <div style="padding:4px 0"><input class="agenda-search" placeholder="Buscar cliente..." value="${s.agendaSearch}" oninput="setAgendaSearch(this.value)"></div>
+    <div style="padding:4px 0"><input id="s-agenda-search" class="agenda-search" placeholder="Buscar cliente..." value="${s.agendaSearch}" oninput="setAgendaSearch(this.value)"></div>
     <div class="agenda-views"><button class="agenda-view-btn${isHoje?' active':''}" onclick="setAgendaView('hoje')">Hoje</button><button class="agenda-view-btn${!isHoje?' active':''}" onclick="setAgendaView('semana')">Semana</button></div>
     ${isHoje?`
       <div class="agenda-timeline">
@@ -638,7 +649,7 @@ function renderClients(search,clients,appts,colors,s){
     <div style="display:flex;gap:6px;margin-bottom:10px">
       <div style="flex:1;position:relative">
         <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text);pointer-events:none">${svg(I.search,12)}</span>
-        <input placeholder="Buscar cliente..." value="${search}" oninput="searchClient(this.value)" style="width:100%;padding:9px 10px 9px 32px;border-radius:8px;border:1px solid var(--card-border);font-size:12px;outline:none;color:var(--text-primary);background:var(--input-bg);box-sizing:border-box">
+        <input id="s-client-search" placeholder="Buscar cliente..." value="${search}" oninput="searchClient(this.value)" style="width:100%;padding:9px 10px 9px 32px;border-radius:8px;border:1px solid var(--card-border);font-size:12px;outline:none;color:var(--text-primary);background:var(--input-bg);box-sizing:border-box">
       </div>
       <button onclick="openClientModal()" style="background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:8px;color:var(--dark);padding:8px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">${svg(I.plus,12)}</button>
     </div>
@@ -646,7 +657,7 @@ function renderClients(search,clients,appts,colors,s){
     ${filtered.length===0?`<div class="card"><div class="empty-state"><div class="icon">&#128101;</div><div class="msg">Nenhum cliente encontrado</div></div></div>`:
       filtered.map(c=>{
         const info=getClientInfo(c.name)
-        return`<div class="cli-row" onclick="viewClient('${c.name}')">
+        return`<div class="cli-row" onclick="viewClient('${esc(c.name)}')">
           <div class="cli-avatar">${c.name.charAt(0)}</div>
           <div class="cli-info"><div class="cli-name">${c.name}</div><div class="cli-meta">Ultima visita: ${info.lastAppt?info.lastAppt.date.slice(5).split('-').reverse().join('/'):'---'} • Total: R$ ${info.total}</div></div>
           <span class="cli-ver">Ver ${svg(I.right,10)}</span>
@@ -675,8 +686,8 @@ function renderClientDetail(s,colors){
     </div>
 
     <div style="display:flex;gap:6px;margin-bottom:12px">
-      <button class="btn-primary" onclick="startBookingFromClient('${client}')" style="flex:1;margin:0;padding:9px;font-size:11px">${svg(I.plus,12)} Agendar</button>
-      <button class="btn-secondary" onclick="editClientByName('${client}')" style="margin:0;padding:9px;font-size:11px">${svg(I.edit,12)} Editar</button>
+<button class="btn-primary" onclick="startBookingFromClient('${esc(client)}')" style="flex:1;margin:0;padding:9px;font-size:11px">${svg(I.plus,12)} Agendar</button>
+<button class="btn-secondary" onclick="editClientByName('${esc(client)}')" style="margin:0;padding:9px;font-size:11px">${svg(I.edit,12)} Editar</button>
       ${cl&&(cl.whatsapp||cl.phone)?`<button class="btn-secondary" onclick="window.open('https://wa.me/55${(cl.whatsapp||cl.phone).replace(/[^0-9]/g,'')}','_blank')" style="margin:0;padding:9px;font-size:11px">📱</button>`:''}
     </div>
 
@@ -792,23 +803,26 @@ function step1(s){
 }
 
 function step2(s){
-  return`
-    <div class="form-group"><label>Nome da cliente</label><input placeholder="Nome" value="${s.formAppt.client}" oninput="formAppt('client',this.value)"></div>
-    <div class="form-group" style="margin-top:8px"><label>Data e horario</label></div>
-    <div class="form-row">
-      <div class="form-group"><input type="date" value="${s.formAppt.date}" oninput="formAppt('date',this.value)"></div>
-      <div class="form-group"><input type="time" value="${s.formAppt.time}" oninput="formAppt('time',this.value)"></div>
-    </div>
-    <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:4px">
-      ${['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00'].map(t=>
-        `<span class="service-chip${s.formAppt.time===t?' active':''}" onclick="formAppt('time','${t}');render()">${t}</span>`
-      ).join('')}
-    </div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button class="btn-secondary" onclick="prevStep()">Voltar</button>
-      <button class="btn-gold" onclick="nextStep()">Prosseguir</button>
-    </div>
-  `
+const cfg=s.config;let oh,om,ch,cm;[oh,om]=cfg.openTime.split(':').map(Number);[ch,cm]=cfg.closeTime.split(':').map(Number)
+const startMin=oh*60+om,endMin=ch*60+cm;const timeSlots=[]
+for(let m=startMin;m<endMin;m+=60){const h=Math.floor(m/60),min=m%60;timeSlots.push(String(h).padStart(2,'0')+':'+String(min).padStart(2,'0'))}
+return`
+<div class="form-group"><label>Nome da cliente</label><input placeholder="Nome" value="${s.formAppt.client}" oninput="formAppt('client',this.value)"></div>
+<div class="form-group" style="margin-top:8px"><label>Data e horario</label></div>
+<div class="form-row">
+<div class="form-group"><input type="date" value="${s.formAppt.date}" oninput="formAppt('date',this.value)"></div>
+<div class="form-group"><input type="time" value="${s.formAppt.time}" oninput="formAppt('time',this.value)"></div>
+</div>
+<div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:4px">
+${timeSlots.map(t=>
+`<span class="service-chip${s.formAppt.time===t?' active':''}" onclick="formAppt('time','${t}');render()">${t}</span>`
+).join('')}
+</div>
+<div style="display:flex;gap:8px;margin-top:12px">
+<button class="btn-secondary" onclick="prevStep()">Voltar</button>
+<button class="btn-gold" onclick="nextStep()">Prosseguir</button>
+</div>
+`
 }
 
 function step3(s){
@@ -884,7 +898,7 @@ function prevDay(){const d=new Date(state.selectedDate+'T12:00:00');d.setDate(d.
 function nextDay(){const d=new Date(state.selectedDate+'T12:00:00');d.setDate(d.getDate()+1);state.selectedDate=d.toISOString().slice(0,10);render()}
 function goToday(){state.selectedDate=today();render()}
 function setAgendaView(v){state.agendaView=v;state.agendaSelAppt=null;render()}
-function setAgendaSearch(v){state.agendaSearch=v;render()}
+let _debAgenda;function setAgendaSearch(v){state.agendaSearch=v;clearTimeout(_debAgenda);_debAgenda=setTimeout(render,300)}
 function toggleFreeSlots(){state.showFreeSlots=!state.showFreeSlots;render()}
 function selAppt(id){state.agendaSelAppt=state.agendaSelAppt===id?null:id;render()}
 function quickStatus(id,st){state.appointments=state.appointments.map(a=>a.id===id?{...a,status:st}:a);save();if(st==='concluido'){const a=state.appointments.find(x=>x.id===id);if(a&&!state.transactions.find(t=>t.desc.includes(a.client)&&t.desc.includes(a.service)))state.transactions.push({id:Date.now(),desc:`${a.service} — ${a.client}`,type:'entrada',value:a.value,date:a.date,cat:'Servico'});save()}state.agendaSelAppt=null;render()}
@@ -924,7 +938,7 @@ function editAppt(id){
 }
 function saveEditAppt(){
   const f=state.formAppt,e=state.editingAppt
-  if(!f.client||!f.value)return toast('Preencha todos os campos')
+  if(!f.client||!f.service||!f.value)return toast('Preencha todos os campos')
   state.appointments=state.appointments.map(a=>a.id===e.id?{...a,...f,value:parseFloat(f.value)}:a)
   save();state.showModal=false;state.editingAppt=null;toast('Atualizado!');render()
 }
@@ -965,7 +979,7 @@ function deleteTrans(id){
 }
 
 /* CLIENTS */
-function searchClient(v){state.clientSearch=v;render()}
+let _debClient;function searchClient(v){state.clientSearch=v;clearTimeout(_debClient);_debClient=setTimeout(render,300)}
 function setClientFilter(f){state.clientFilter=f;render()}
 function setClientSort(s){state.clientSort=s;render()}
 function viewClient(name){
